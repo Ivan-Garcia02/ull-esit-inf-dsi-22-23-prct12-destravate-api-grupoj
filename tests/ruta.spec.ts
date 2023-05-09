@@ -10,7 +10,7 @@ const primeraRuta = {
   geolocalizacionFinal: [20,2],
   longitud: 2002,
   desnivel: 200,
-  usuariosRealizaron: ["IvanYVienen", "Andresol"],
+  usuariosRealizaron: [],
   tipoActividad: 'bicicleta',
   calificacion: 6
 }
@@ -29,7 +29,7 @@ describe('POST /tracks', () => {
       geolocalizacionFinal: [20,2],
       longitud: 2002,
       desnivel: 200,
-      usuariosRealizaron: ["IvanYVienen", "Andresol"],
+      usuariosRealizaron: [],
       tipoActividad: 'bicicleta',
       calificacion: 6
     }).expect(201);
@@ -43,7 +43,7 @@ describe('POST /tracks', () => {
       geolocalizacionFinal: [20,2],
       longitud: -2002,
       desnivel: 200,
-      usuariosRealizaron: ["IvanYVienen", "Andresol"],
+      usuariosRealizaron: [],
       tipoActividad: 'bici',
       calificacion: 6
     }).expect(400);
