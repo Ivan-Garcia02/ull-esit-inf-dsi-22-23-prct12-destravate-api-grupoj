@@ -1,6 +1,14 @@
 import { Document, Schema, model } from 'mongoose';
 
-type Coordenada = [number, number, number, 'N' | 'S' | 'E' | 'O'];
+//type Coordenada = [number, number, number, 'N' | 'S' | 'E' | 'O'];
+
+
+/*interface Coordenada extends Document {
+  coordenada1: number,
+  coordenada2: number,
+  coordenada3: number,
+  orientacion: 'N' | 'S' | 'E' | 'O'
+}*/
 
 /**
  * ID único de la ruta.
@@ -14,7 +22,7 @@ type Coordenada = [number, number, number, 'N' | 'S' | 'E' | 'O'];
  * Calificación media de la ruta.
  */
 interface RutaDocumentInterface extends Document {
-  ID: string,
+  ID: number,
   nombre: string,
   geolocalizacionInicio: string /*Coordenada*/,
   geolocalizacionFinal: string /*Coordenada*/,
@@ -27,10 +35,9 @@ interface RutaDocumentInterface extends Document {
 
 const RutaSchema = new Schema<RutaDocumentInterface>({
   ID: {
-    type: String,
+    type: Number,
     unique: true,
     required: true,
-    trim: true,
   },
   nombre: {
     type: String,
