@@ -1,7 +1,8 @@
 import { connect } from 'mongoose';
 
-connect('mongodb://127.0.0.1:27017/destravate-api').then(() => {
+try{
+  await connect(process.env.MONGODB_URL!);
   console.log('Connection to MongoDB server established');
-}).catch(() => {
-  console.log('Unable to connect to MongoDB server');
-});
+} catch (error) {
+  console.log(error);
+}

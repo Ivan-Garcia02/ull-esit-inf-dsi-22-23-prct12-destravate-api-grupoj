@@ -3,6 +3,9 @@ import { Ruta } from '../models/ruta.js';
 
 export const rutaRouter = express.Router();
 
+/**
+ * Crear una ruta
+ */
 rutaRouter.post('/tracks', async (req, res) => {
   const ruta = new Ruta(req.body);
 
@@ -14,19 +17,10 @@ rutaRouter.post('/tracks', async (req, res) => {
   }
 });
 
-/*rutaRouter.get('/tracks', async (req, res) => {
-  try {
-    const ruta = await Ruta.find(); 
-    if (ruta.length !== 0) {
-      res.send(ruta);
-    } else {
-      res.status(404).send();
-    }
-  } catch (error) {
-    res.status(500).send(error);
-  }
-});*/
 
+/**
+ * Obtener una ruta a través del nombre de la misma
+ */
 rutaRouter.get('/tracks', async (req, res) => {
   if (!req.query.nombre) {
     return res.status(400).send({
@@ -38,7 +32,7 @@ rutaRouter.get('/tracks', async (req, res) => {
   try {
     const ruta = await Ruta.find(filter); 
     if (ruta.length !== 0) {
-      return res.send(ruta);
+      return res.status(201).send(ruta);
     } else {
       return res.status(404).send();
     }
@@ -47,13 +41,18 @@ rutaRouter.get('/tracks', async (req, res) => {
   }
 });
 
+
+/**
+ * Obtener una ruta a través del la id,
+ * introducida en la URL
+ */
 rutaRouter.get('/tracks/:id', async (req, res) => { // :id
   const filter = req.params.id?{ID: req.params.id}:{};
 
   try {
     const ruta = await Ruta.find(filter); 
     if (ruta.length !== 0) {
-      res.send(ruta);
+      res.status(201).send(ruta);
     } else {
       res.status(404).send();
     }
@@ -63,41 +62,11 @@ rutaRouter.get('/tracks/:id', async (req, res) => { // :id
 });
 
 
-/*
-noteRouter.patch('/notes', (req, res) => {
-  if (!req.query.title) {
-    res.status(400).send({
-      error: 'A title must be provided',
-    });
-  } else {
-    const allowedUpdates = ['title', 'body', 'color'];
-    const actualUpdates = Object.keys(req.body);
-    const isValidUpdate =
-      actualUpdates.every((update) => allowedUpdates.includes(update));
-
-    if (!isValidUpdate) {
-      res.status(400).send({
-        error: 'Update is not permitted',
-      });
-    } else {
-      Note.findOneAndUpdate({title: req.query.title.toString()}, req.body, {
-        new: true,
-        runValidators: true,
-      }).then((note) => {
-        if (!note) {
-          res.status(404).send();
-        } else {
-          res.send(note);
-        }
-      }).catch((error) => {
-        res.status(400).send(error);
-      });
-    }
-  }
-});
-*/
-
-
+/**
+ * Actualizar una ruta,
+ * modificando cuales quiera de sus valores,
+ * a través de su nombre
+ */
 rutaRouter.patch('/tracks', async (req, res) => {
   if (!req.query.nombre) {
     return res.status(400).send({
@@ -132,7 +101,7 @@ rutaRouter.patch('/tracks', async (req, res) => {
     })
 
     if (note) {
-      return res.send(note);
+      return res.status(201).send(note);
     }
     return res.status(404).send();
   } catch (error) {
@@ -140,6 +109,12 @@ rutaRouter.patch('/tracks', async (req, res) => {
   }
 });
 
+
+/**
+ * Actualizar una ruta,
+ * modificando cuales quiera de sus valores,
+ * a través de su ID, introducida por la URL
+ */
 rutaRouter.patch('/tracks/:id', async (req, res) => {
   try {
     const ruta = await Ruta.findOne({
@@ -168,7 +143,7 @@ rutaRouter.patch('/tracks/:id', async (req, res) => {
     })
 
     if (note) {
-      return res.send(note);
+      return res.status(201).send(note);
     }
     return res.status(404).send();
   } catch (error) {
@@ -177,7 +152,10 @@ rutaRouter.patch('/tracks/:id', async (req, res) => {
 });
 
 
-
+/**
+ * Eliminar una ruta,
+ * a través de su nombre
+ */
 rutaRouter.delete('/tracks', async (req, res) => {
   if (!req.query.nombre) {
     return res.status(400).send({
@@ -201,13 +179,17 @@ rutaRouter.delete('/tracks', async (req, res) => {
     }
 
     await Ruta.findByIdAndDelete(ruta._id);
-    return res.send(ruta);
+    return res.status(201).send(ruta);
   } catch (error) {
     return res.status(500).send(error);
   }
 });
 
 
+/**
+ * Eliminar una ruta,
+ * a través de su ID, introducida en la URL
+ */
 rutaRouter.delete('/tracks/:id', async (req, res) => {
   try {
     const ruta = await Ruta.findOne({
@@ -225,7 +207,7 @@ rutaRouter.delete('/tracks/:id', async (req, res) => {
     }
 
     await Ruta.findByIdAndDelete(ruta._id);
-    return res.send(ruta);
+    return res.status(201).send(ruta);
   } catch (error) {
     return res.status(500).send(error);
   }

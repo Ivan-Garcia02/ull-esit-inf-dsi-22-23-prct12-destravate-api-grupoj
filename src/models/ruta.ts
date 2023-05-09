@@ -1,15 +1,5 @@
 import { Document, Schema, model } from 'mongoose';
 
-//type Coordenada = [number, number, number, 'N' | 'S' | 'E' | 'O'];
-
-
-/*interface Coordenada extends Document {
-  coordenada1: number,
-  coordenada2: number,
-  coordenada3: number,
-  orientacion: 'N' | 'S' | 'E' | 'O'
-}*/
-
 /**
  * ID único de la ruta.
  * Nombre de la ruta.
@@ -21,11 +11,11 @@ import { Document, Schema, model } from 'mongoose';
  * Tipo de actividad: Indicador si la ruta se puede realizar en bicicleta o corriendo.
  * Calificación media de la ruta.
  */
-interface RutaDocumentInterface extends Document {
+export interface RutaDocumentInterface extends Document {
   ID: number,
   nombre: string,
-  geolocalizacionInicio: string /*Coordenada*/,
-  geolocalizacionFinal: string /*Coordenada*/,
+  geolocalizacionInicio: [number, number],
+  geolocalizacionFinal: [number, number],
   longitud: number,
   desnivel: number,
   usuariosRealizaron: string[],
@@ -45,14 +35,12 @@ const RutaSchema = new Schema<RutaDocumentInterface>({
     trim: true,
   },
   geolocalizacionInicio: {
-    type: String,
+    type: [Number, Number],
     required: true,
-    trim: true,
   },
   geolocalizacionFinal: {
-    type: String,
+    type: [Number, Number],
     required: true,
-    trim: true,
   },
   longitud: {
     type: Number,
