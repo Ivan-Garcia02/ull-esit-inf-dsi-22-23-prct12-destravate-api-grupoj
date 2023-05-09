@@ -1,4 +1,5 @@
 import { Document, Schema, model } from 'mongoose';
+import { UsuarioDocumentInterface } from './usuario.js';
 
 /**
  * ID único de la ruta.
@@ -18,7 +19,7 @@ export interface RutaDocumentInterface extends Document {
   geolocalizacionFinal: [number, number],
   longitud: number,
   desnivel: number,
-  usuariosRealizaron: string[],
+  usuariosRealizaron: UsuarioDocumentInterface[],
   tipoActividad: 'bicicleta' | 'correr',
   calificacion: number
 }
@@ -56,8 +57,9 @@ const RutaSchema = new Schema<RutaDocumentInterface>({
     required: true,
   },
   usuariosRealizaron: {
-    type: [String],
+    type: [Schema.Types.ObjectId],
     required: true,
+    ref: 'Usuario',
   },
   tipoActividad: {
     type: String,
