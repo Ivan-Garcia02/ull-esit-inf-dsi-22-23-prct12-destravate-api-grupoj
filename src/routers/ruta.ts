@@ -14,7 +14,6 @@ rutaRouter.post('/tracks', async (req, res) => {
   }
 });
 
-
 /*rutaRouter.get('/tracks', async (req, res) => {
   try {
     const ruta = await Ruta.find(); 
