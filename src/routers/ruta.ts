@@ -9,7 +9,7 @@ rutaRouter.post('/tracks', async (req, res) => {
   try {
     await ruta.save();
     res.status(201).send(ruta);
-  } catch (error) {
+  } catch (error) { 
     res.status(400).send(error);
   }
 });
