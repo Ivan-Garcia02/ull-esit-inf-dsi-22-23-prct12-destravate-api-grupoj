@@ -176,7 +176,7 @@ rutaRouter.patch('/tracks/:id', async (req, res) => {
 rutaRouter.delete('/tracks', async (req, res) => {
   if (!req.query.nombre) {
     return res.status(400).send({
-        error: 'Es necesario poner ruta',
+      error: 'Es necesario poner ruta',
     });
   }
   
@@ -213,9 +213,9 @@ rutaRouter.delete('/tracks/:id', async (req, res) => {
       ID: req.params.id
     });
     if (!ruta) {
-        return res.status(404).send({
-          error: "Ruta no encontrada"
-        });
+      return res.status(404).send({
+        error: "Ruta no encontrada"
+      });
     }
 
     const result = await Ruta.deleteMany({owner: ruta._id});

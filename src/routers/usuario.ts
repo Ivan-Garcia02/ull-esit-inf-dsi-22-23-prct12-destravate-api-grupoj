@@ -1,6 +1,6 @@
 import express from 'express';
 import { Grupo } from '../models/grupo.js';
-import { Usuario } from '../models/usuario.js';
+import { Usuario, usuarioJSON } from '../models/usuario.js';
 import { Ruta } from '../models/ruta.js';
 import { Reto } from '../models/reto.js';
 
@@ -101,5 +101,98 @@ usuarioRouter.post('/users', async (req, res) => {
   } catch (error) { 
     console.log(error)
     return res.status(400).send(error);
+  }
+});
+
+
+/**
+ * Obtener un usuario a través del nombre del mismo
+ */
+
+usuarioRouter.get('/users', async (req, res) => {
+  if (!req.query.nombre) {
+    return res.status(400).send({
+      error: 'Es necesario poner nombre del usuario',
+    });
+  }
+  const filter = req.query.nombre?{nombre: req.query.nombre}:{};
+
+  try {
+    const user = await Usuario.findOne(filter); 
+    if (user) {
+      let amigos: string[] = [];
+      let grupoAmigos: string [][] = [];
+      let rutasFavoritas: string[] = [];
+      let retosActivos: string[] = [];
+      let historicoRutas: [string, string][] = [];
+
+      // amigos
+      for (let i = 0; i < user.amigos.length; i++) {
+        const userAux = await Usuario.findById(user.amigos[i]);
+        if (!userAux) {
+          return res.status(404).send({
+            error: "User for amigos not found"
+          });
+        }
+
+        amigos.push(userAux.ID);
+      }
+
+      // grupoAmigos
+      for (let i = 0; i < user.grupoAmigos.length; i++) {
+        let aux:  string[] = []
+        for (let j = 0; j < user.grupoAmigos[i].length; j++) {
+          const userAux = await Usuario.findOne({ID: grupoAmigos[i][j]});
+          if (!userAux) {
+            return res.status(404).send({
+              error: "User for grupoAmigos not found" ,
+              adicional_information: {ID: grupoAmigos[i][j]},
+            });
+          }
+          aux.push(userAux.ID);
+        }
+        grupoAmigos.push(aux);
+      } 
+
+      // rutasFavoritas
+      for (let i = 0; i < user.rutasFavoritas.length; i++) {
+        const userAux = await Ruta.findById(user.rutasFavoritas[i]);
+        if (!userAux) {
+          return res.status(404).send({
+            error: "User for rutasFavoritas not found"
+          });
+        }
+        rutasFavoritas.push(userAux.nombre);
+      }
+
+      // retosActivos
+      for (let i = 0; i < user.retosActivos.length; i++) {
+        const userAux = await Reto.findById(user.retosActivos[i]);
+        if (!userAux) {
+          return res.status(404).send({
+            error: "User for retosActivos not found"
+          });
+        }
+        retosActivos.push(userAux.nombre);
+      }
+
+      // historicoRutas
+      for (let i = 0; i < user.historicoRutas.length; i++) {
+        const track = await Ruta.findById(user.historicoRutas[i][1]);
+        if (!track) {
+          return res.status(404).send({
+            error: "User for historicoRuta not found" 
+          });
+        }
+        historicoRutas.push([user.historicoRutas[i][0], track.nombre]);
+      }
+
+      let usuarioJSON: usuarioJSON = {ID: user.ID, nombre: user.nombre, tipoActividad: user.tipoActividad, amigos: amigos, grupoAmigos: grupoAmigos, estadisticasEntrenamiento: user.estadisticasEntrenamiento, rutasFavoritas: rutasFavoritas, retosActivos: retosActivos, historicoRutas: historicoRutas};
+      return res.status(201).send(usuarioJSON);
+    } else {
+      return res.status(404).send();
+    }
+  } catch (error) {
+    return res.status(500).send(error);
   }
 });

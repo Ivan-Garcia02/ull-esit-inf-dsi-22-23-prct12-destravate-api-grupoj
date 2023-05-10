@@ -75,3 +75,15 @@ const UsuarioSchema = new Schema<UsuarioDocumentInterface>({
 });
 
 export const Usuario = model<UsuarioDocumentInterface>('Usuario', UsuarioSchema);
+
+export type usuarioJSON = {
+  ID: string,
+  nombre: string,
+  tipoActividad: string,
+  amigos: string[],
+  grupoAmigos: string[][],
+  estadisticasEntrenamiento: [number, number, string, number],
+  rutasFavoritas: string[],
+  retosActivos: string[],
+  historicoRutas: [string, string][],
+}
