@@ -34,6 +34,7 @@ const RutaSchema = new Schema<RutaDocumentInterface>({
     type: String,
     required: true,
     trim: true,
+    uniqued: true,
   },
   geolocalizacionInicio: {
     type: [Number, Number],

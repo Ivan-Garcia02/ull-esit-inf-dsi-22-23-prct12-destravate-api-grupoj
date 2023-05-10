@@ -29,6 +29,7 @@ const RetoSchema = new Schema<RetoDocumentInterface>({
     type: String,
     required: true,
     trim: true,
+    uniqued: true,
   },
   rutas: {
     type: [Schema.Types.ObjectId],

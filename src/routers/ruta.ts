@@ -1,5 +1,6 @@
 import express from 'express';
 import { Ruta } from '../models/ruta.js';
+import { Usuario } from '../models/usuario.js';
 
 export const rutaRouter = express.Router();
 
@@ -7,13 +8,29 @@ export const rutaRouter = express.Router();
  * Crear una ruta
  */
 rutaRouter.post('/tracks', async (req, res) => {
+  let usuariosRealizaronRef: typeof Usuario[] = [];
+  let usuariosRealizaron: string[] = req.body.usuariosRealizaron;
   const ruta = new Ruta(req.body);
 
   try {
+    for (let i = 0; i < usuariosRealizaron.length; i++) {
+      const track = await Usuario.findOne({ID: usuariosRealizaron[i]});
+      if (!track) {
+        return res.status(404).send({
+          error: "Usuario no encontrado" 
+        });
+      }
+      usuariosRealizaronRef.push(track._id);
+      //console.log("hola");
+      console.log(usuariosRealizaron, usuariosRealizaronRef);
+    }
+    const ruta = new Ruta(req.body);
+
     await ruta.save();
-    res.status(201).send(ruta);
+    return res.status(201).send(ruta);
   } catch (error) { 
-    res.status(400).send(error);
+    console.log(error)
+    return res.status(400).send(error);
   }
 });
 

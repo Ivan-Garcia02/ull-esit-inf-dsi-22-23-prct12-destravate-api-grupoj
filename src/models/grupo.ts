@@ -30,6 +30,7 @@ const GrupoSchema = new Schema<GrupoDocumentInterface>({
   },
   nombre: {
     type: String,
+    unique: true,
     required: true,
     trim: true,
   },
@@ -60,3 +61,13 @@ const GrupoSchema = new Schema<GrupoDocumentInterface>({
 });
 
 export const Grupo = model<GrupoDocumentInterface>('Grupo', GrupoSchema);
+
+export type grupoJSON = {
+  ID: number,
+  nombre: string,
+  participantes: string[],
+  estadisticasEntrenamiento: [number, number, string, number],
+  clasificacionUsuarios: string[],
+  rutasFavoritas: string[],
+  historicoRutas: [string, string][],
+}
