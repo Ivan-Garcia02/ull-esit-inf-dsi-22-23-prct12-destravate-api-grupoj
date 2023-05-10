@@ -1,6 +1,6 @@
 import express from 'express';
 import { Grupo, grupoJSON } from '../models/grupo.js';
-import { Usuario } from '../models/usuario.js';
+import { Usuario, UsuarioDocumentInterface } from '../models/usuario.js';
 import { Ruta } from '../models/ruta.js';
 
 export const grupoRouter = express.Router();
@@ -15,6 +15,7 @@ grupoRouter.post('/groups', async (req, res) => {
   let rutas: string[] = req.body.rutasFavoritas;
   let historicoRutasRef: [string, typeof Ruta][] = [];
   let historicoRutas: string[] = req.body.historicoRutas;
+  let clasificacionUsuariosTupla: [number, typeof Usuario][] = [];
   
   try {
     for (let i = 0; i < participantes.length; i++) {
@@ -26,6 +27,14 @@ grupoRouter.post('/groups', async (req, res) => {
       }
 
       participantesRef.push(user._id);
+      // Obtenemos los kilometros totales del usuario para despues oredenar
+      clasificacionUsuariosTupla.push([0, user._id]);
+      for (let j = 0; j < user.historicoRutas.length; j++) {
+        const track = await Ruta.findById(user.historicoRutas[j][1]);
+        if (track) {
+          clasificacionUsuariosTupla[i][0] = clasificacionUsuariosTupla[i][0] + track.longitud;
+        }
+      }
     }
     for (let i = 0; i < rutas.length; i++) {
       const track = await Ruta.findOne({ID: rutas[i]});
@@ -47,7 +56,11 @@ grupoRouter.post('/groups', async (req, res) => {
 
       historicoRutasRef.push([historicoRutas[i][0], track._id]);
     }
-    let clasificacionUsuariosRef: typeof Usuario[] = participantesRef;
+    let clasificacionUsuariosRef: typeof Usuario[] = []; 
+    clasificacionUsuariosTupla.sort((a, b) => b[0] - a[0]);
+    for (let i = 0; i < clasificacionUsuariosTupla.length; i++) {
+      clasificacionUsuariosRef.push(clasificacionUsuariosTupla[i][1]);
+    }
 
     req.body.participantes = participantesRef;
     req.body.clasificacionUsuarios = clasificacionUsuariosRef;
@@ -56,6 +69,19 @@ grupoRouter.post('/groups', async (req, res) => {
     const grupo = new Grupo(req.body);
 
     await grupo.save();
+    for (let i = 0; i < grupo.participantes.length; i++) { // Actualizamos los grupos de amigos
+      const user = await Usuario.findOne({ID: participantes[i]});
+
+      if (user && !user.amigos.find(gru => gru.ID === req.body.ID)) { // No esta el grupo en el participante
+        user.grupoAmigos.push(grupo._id);
+
+        await Usuario.findOneAndUpdate(user._id, {grupoAmigos: user.grupoAmigos}, {
+          new: true,
+          runValidators: true
+        })
+      } 
+    }
+     
     return res.status(201).send(grupo);
   } catch (error) { 
     return res.status(400).send(error);
@@ -242,15 +268,36 @@ grupoRouter.patch('/groups', async (req, res) => {
     let historicoRutasRef: [string, typeof Ruta][] = [];
     let historicoRutas: string[] = req.body.historicoRutas;
     if (req.body.participantes) {
-      for (let i = 0; i < participantes.length; i++) {
+      for (let i = 0; i < grupo.participantes.length; i++) { // Eliminamos los antiguos de los usuarios
+        const user = await Usuario.findById(grupo.participantes[i]._id);
+        if (!user) {
+          return res.status(404).send({
+            error: "Usuario no encontrado"
+          });
+        }
+  
+        const indexGroup = user.grupoAmigos.findIndex(grup => {grup.ID === grupo.ID});
+        user.grupoAmigos.splice(indexGroup, 1);
+
+        await Usuario.findOneAndUpdate(user._id, {grupoAmigos: user.grupoAmigos}, {
+          new: true,
+          runValidators: true
+        })
+      }
+      for (let i = 0; i < participantes.length; i++) { // Actualizamos los participantes, tambien añadimos en los usuarios
         const user = await Usuario.findOne({ID: participantes[i]});
         if (!user) {
           return res.status(404).send({
             error: "User not found"
           });
         }
-  
         participantesRef.push(user._id);
+
+        user.grupoAmigos.push(grupo._id);
+        await Usuario.findOneAndUpdate(user._id, {grupoAmigos: user.grupoAmigos}, {
+          new: true,
+          runValidators: true
+        })
       }
       req.body.participantes = participantesRef;
     }
@@ -321,6 +368,23 @@ grupoRouter.delete('/groups', async (req, res) => {
       });
     }
 
+    for (let i = 0; i < grupo.participantes.length; i++) {
+      const user = await Usuario.findById(grupo.participantes[i]);
+      if (!user) {
+        return res.status(404).send({
+          error: "Usuario no encontrado" 
+        });
+      }
+      
+      const indexGroup = user.grupoAmigos.findIndex(grup => {grup.ID === grupo.ID});
+      user.grupoAmigos.splice(indexGroup, 1);
+
+      await Usuario.findOneAndUpdate(user._id, {grupoAmigos: user.grupoAmigos}, {
+        new: true,
+        runValidators: true
+      })
+    }
+
     await Grupo.findByIdAndDelete(grupo._id);
     return res.status(201).send(grupo);
   } catch (error) {
@@ -342,6 +406,23 @@ grupoRouter.delete('/groups/:id', async (req, res) => {
       return res.status(404).send({
         error: "Grupo no encontrado"
       });
+    }
+
+    for (let i = 0; i < grupo.participantes.length; i++) {
+      const user = await Usuario.findById(grupo.participantes[i]);
+      if (!user) {
+        return res.status(404).send({
+          error: "Usuario no encontrado" 
+        });
+      }
+      
+      const indexGroup = user.grupoAmigos.findIndex(grup => {grup.ID === grupo.ID});
+      user.grupoAmigos.splice(indexGroup, 1);
+
+      await Usuario.findOneAndUpdate(user._id, {grupoAmigos: user.grupoAmigos}, {
+        new: true,
+        runValidators: true
+      })
     }
 
     await Grupo.findByIdAndDelete(grupo._id);

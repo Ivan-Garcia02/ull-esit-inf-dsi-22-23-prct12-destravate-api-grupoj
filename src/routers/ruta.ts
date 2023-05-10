@@ -1,5 +1,5 @@
 import express from 'express';
-import { Ruta } from '../models/ruta.js';
+import { Ruta, rutaJSON } from '../models/ruta.js';
 import { Usuario } from '../models/usuario.js';
 
 export const rutaRouter = express.Router();
@@ -8,12 +8,11 @@ export const rutaRouter = express.Router();
  * Crear una ruta
  */
 rutaRouter.post('/tracks', async (req, res) => {
-  let usuariosRealizaronRef: typeof Usuario[] = [];
-  let usuariosRealizaron: string[] = req.body.usuariosRealizaron;
-  const ruta = new Ruta(req.body);
+  //let usuariosRealizaronRef: typeof Usuario[] = [];
+  //let usuariosRealizaron: string[] = req.body.usuariosRealizaron;
 
   try {
-    for (let i = 0; i < usuariosRealizaron.length; i++) {
+    /*for (let i = 0; i < usuariosRealizaron.length; i++) {
       const track = await Usuario.findOne({ID: usuariosRealizaron[i]});
       if (!track) {
         return res.status(404).send({
@@ -21,15 +20,12 @@ rutaRouter.post('/tracks', async (req, res) => {
         });
       }
       usuariosRealizaronRef.push(track._id);
-      //console.log("hola");
-      console.log(usuariosRealizaron, usuariosRealizaronRef);
-    }
+    }*/
     const ruta = new Ruta(req.body);
 
     await ruta.save();
     return res.status(201).send(ruta);
   } catch (error) { 
-    console.log(error)
     return res.status(400).send(error);
   }
 });
@@ -47,9 +43,22 @@ rutaRouter.get('/tracks', async (req, res) => {
   const filter = req.query.nombre?{nombre: req.query.nombre}:{};
 
   try {
-    const ruta = await Ruta.find(filter); 
-    if (ruta.length !== 0) {
-      return res.status(201).send(ruta);
+    const ruta = await Ruta.findOne(filter); 
+    if (ruta) {
+      let usuarios: string[] =  [];
+      for (let i = 0; i < ruta.usuariosRealizaron.length; i++) {
+        const user = await Usuario.findById(ruta.usuariosRealizaron[i]);
+        if (!user) {
+          return res.status(404).send({
+            error: "User not found"
+          });
+        }
+
+        usuarios.push(user.ID);
+      }
+
+      let rutaJson: rutaJSON = {ID: ruta.ID, nombre: ruta.nombre, geolocalizacionInicio: ruta.geolocalizacionInicio, geolocalizacionFinal: ruta.geolocalizacionFinal, longitud: ruta.longitud, desnivel: ruta.desnivel, usuariosRealizaron: usuarios, tipoActividad: ruta.tipoActividad, calificacion: ruta.calificacion};
+      return res.status(201).send(rutaJson);
     } else {
       return res.status(404).send();
     }
@@ -67,14 +76,28 @@ rutaRouter.get('/tracks/:id', async (req, res) => { // :id
   const filter = req.params.id?{ID: req.params.id}:{};
 
   try {
-    const ruta = await Ruta.find(filter); 
-    if (ruta.length !== 0) {
-      res.status(201).send(ruta);
+    const ruta = await Ruta.findOne(filter); 
+    
+    if (ruta) {
+      let usuarios: string[] =  [];
+      for (let i = 0; i < ruta.usuariosRealizaron.length; i++) {
+        const user = await Usuario.findById(ruta.usuariosRealizaron[i]);
+        if (!user) {
+          return res.status(404).send({
+            error: "User not found"
+          });
+        }
+
+        usuarios.push(user.ID);
+      }
+
+      let rutaJson: rutaJSON = {ID: ruta.ID, nombre: ruta.nombre, geolocalizacionInicio: ruta.geolocalizacionInicio, geolocalizacionFinal: ruta.geolocalizacionFinal, longitud: ruta.longitud, desnivel: ruta.desnivel, usuariosRealizaron: usuarios, tipoActividad: ruta.tipoActividad, calificacion: ruta.calificacion};
+      return res.status(201).send(rutaJson);
     } else {
-      res.status(404).send();
+      return res.status(404).send();
     }
   } catch (error) {
-    res.status(500).send(error);
+    return res.status(500).send(error);
   }
 });
 
@@ -101,7 +124,7 @@ rutaRouter.patch('/tracks', async (req, res) => {
       });
     }
 
-    const allowedUpdates = ['nombre', 'geolocalizacionInicio', 'geolocalizacionFinal', 'longitud', 'desnivel', 'usuariosRealizaron','tipoActividad', 'calificacion'];
+    const allowedUpdates = ['nombre', 'geolocalizacionInicio', 'geolocalizacionFinal', 'longitud', 'desnivel','tipoActividad', 'calificacion'];
     const actualUpdates = Object.keys(req.body);
     const isValidUpdate =
       actualUpdates.every((update) => allowedUpdates.includes(update));
@@ -143,7 +166,7 @@ rutaRouter.patch('/tracks/:id', async (req, res) => {
       });
     }
 
-    const allowedUpdates = ['nombre', 'geolocalizacionInicio', 'geolocalizacionFinal', 'longitud', 'desnivel', 'usuariosRealizaron','tipoActividad', 'calificacion'];
+    const allowedUpdates = ['nombre', 'geolocalizacionInicio', 'geolocalizacionFinal', 'longitud', 'desnivel','tipoActividad', 'calificacion'];
     const actualUpdates = Object.keys(req.body);
     const isValidUpdate =
       actualUpdates.every((update) => allowedUpdates.includes(update));
@@ -190,11 +213,6 @@ rutaRouter.delete('/tracks', async (req, res) => {
       });
     }
 
-    const result = await Ruta.deleteMany({owner: ruta._id});
-    if (!result.acknowledged) {
-      return res.status(500).send();
-    }
-
     await Ruta.findByIdAndDelete(ruta._id);
     return res.status(201).send(ruta);
   } catch (error) {
@@ -216,11 +234,6 @@ rutaRouter.delete('/tracks/:id', async (req, res) => {
       return res.status(404).send({
         error: "Ruta no encontrada"
       });
-    }
-
-    const result = await Ruta.deleteMany({owner: ruta._id});
-    if (!result.acknowledged) {
-      return res.status(500).send();
     }
 
     await Ruta.findByIdAndDelete(ruta._id);

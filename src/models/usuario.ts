@@ -1,6 +1,7 @@
 import { Document, Schema, model } from 'mongoose';
 import { RutaDocumentInterface } from './ruta.js';
 import { RetoDocumentInterface } from './reto.js';
+import { GrupoDocumentInterface } from './grupo.js';
 
 /**
  * ID único del usuario.
@@ -19,7 +20,7 @@ export interface UsuarioDocumentInterface extends Document {
   nombre: string,
   tipoActividad: 'bicicleta' | 'correr',
   amigos: UsuarioDocumentInterface[],
-  grupoAmigos: UsuarioDocumentInterface[][],
+  grupoAmigos: GrupoDocumentInterface[],
   estadisticasEntrenamiento: [number, number, string, number],
   rutasFavoritas: RutaDocumentInterface[],
   retosActivos: RetoDocumentInterface[],
@@ -49,9 +50,9 @@ const UsuarioSchema = new Schema<UsuarioDocumentInterface>({
     ref: 'Usuario'
   },
   grupoAmigos: {
-    type: [[Schema.Types.ObjectId]],
+    type: [Schema.Types.ObjectId],
     required: true,
-    ref: 'Usuario'
+    ref: 'Grupo'
   },
   estadisticasEntrenamiento: {
     type: [Number, Number, String, Number],
@@ -81,7 +82,7 @@ export type usuarioJSON = {
   nombre: string,
   tipoActividad: string,
   amigos: string[],
-  grupoAmigos: string[][],
+  grupoAmigos: string[],
   estadisticasEntrenamiento: [number, number, string, number],
   rutasFavoritas: string[],
   retosActivos: string[],
