@@ -162,11 +162,11 @@ retoRouter.patch('/challenges', async (req, res) => {
 
   try {
     const reto = await Reto.findOne({
-
+      nombre: req.query.nombre
     });
     if (!reto) {
       return res.status(404).send({
-        error: "reto no encontrado"
+        error: "Reto no encontrado"
       });
     }
 
@@ -185,8 +185,9 @@ retoRouter.patch('/challenges', async (req, res) => {
     let usuariosRealizaron: string[] = req.body.usuariosRealizaron;
 
     if (req.body.rutas) {
-      for (let i = 0; i < reto.rutas.length; i++) {
-        const ruta = await Ruta.findById(reto.rutas[i]._id);
+
+      for (let i = 0; i < rutas.length; i++) {
+        const ruta = await Ruta.findByOne(reto.rutas[i]._id);
         if (!ruta) {
           return res.status(404).send({
             error: "Ruta no encontrada"
@@ -195,6 +196,9 @@ retoRouter.patch('/challenges', async (req, res) => {
         rutasRef.push(ruta._id);
       }
       req.body.rutas = rutasRef;
+    }
+
+    if (req.body.usuariosRealizaron) {
       for (let i = 0; i < reto.usuariosRealizaron.length; i++) {
         const usuario = await Usuario.findById(reto.usuariosRealizaron[i]);
         if (!usuario) {
@@ -210,20 +214,24 @@ retoRouter.patch('/challenges', async (req, res) => {
           runValidators: true
         })
       }
-      for (let i = 0; i < reto.usuariosRealizaron.length; i++) {
+
+      for (let i = 0; i < usuariosRealizaron.length; i++) {
         const usuario = await Usuario.findOne({ID: usuariosRealizaron[i]});
         if (!usuario) {
           return res.status(404).send({
             error: "Usuario no encontrado" 
           });
         }
+        usuariosRealizaronRef.push(usuario._id)
         usuario.retosActivos.push(reto._id);
         await Usuario.findOneAndUpdate(usuario._id, {retosActivos: usuario.retosActivos}, {
           new: true,
           runValidators: true
         })
       }
+      req.body.usuariosRealizaron = usuariosRealizaronRef;
     }
+
     const reti = await Reto.findOneAndUpdate(reto._id, req.body, {
       new: true,
       runValidators: true
