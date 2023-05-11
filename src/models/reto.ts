@@ -53,12 +53,3 @@ const RetoSchema = new Schema<RetoDocumentInterface>({
 });
 
 export const Reto = model<RetoDocumentInterface>('Reto', RetoSchema);
-
-export type retoJSON = {
-  ID: number,
-  nombre: string,
-  rutas: string[],
-  tipoActividad: 'bicicleta' | 'correr',
-  kmTotales: number,
-  usuariosRealizaron: string[]
-}

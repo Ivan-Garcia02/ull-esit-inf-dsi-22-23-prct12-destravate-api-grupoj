@@ -416,8 +416,10 @@ grupoRouter.delete('/groups/:id', async (req, res) => {
         });
       }
       
-      const indexGroup = user.grupoAmigos.findIndex(grup => {grup.ID === grupo.ID});
-      user.grupoAmigos.splice(indexGroup, 1);
+      const indexGroup = user.grupoAmigos.findIndex((grup) => grup.ID === grupo.ID);
+      if (indexGroup != -1) {
+        user.grupoAmigos.splice(indexGroup, 1);
+      }
 
       await Usuario.findOneAndUpdate(user._id, {grupoAmigos: user.grupoAmigos}, {
         new: true,

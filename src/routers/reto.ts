@@ -1,5 +1,5 @@
 import express from 'express';
-import { Reto, retoJSON } from '../models/reto.js';
+import { Reto } from '../models/reto.js';
 import { Usuario } from '../models/usuario.js';
 import { Ruta } from '../models/ruta.js';
 
@@ -25,7 +25,6 @@ retoRouter.post('/challenges', async (req, res) => {
       }
       km_totales += track.longitud;
       rutasRef.push(track._id);
-      console.log(rutas, rutasRef);
     }
 
 
@@ -37,7 +36,6 @@ retoRouter.post('/challenges', async (req, res) => {
         });
       }
       usuariosRealizaronRef.push(user._id);
-      console.log(usuariosRealizaron, usuariosRealizaronRef);
     }
     req.body.rutas = rutasRef;
     req.body.kmTotales = km_totales;
@@ -57,6 +55,14 @@ retoRouter.post('/challenges', async (req, res) => {
         })
       }
     }
+    await reto.populate({
+        path: 'rutas',
+        select: ['ID', 'nombre']
+      });
+      await reto.populate({
+        path: 'usuariosRealizaron',
+        select: ['ID', 'nombre']
+      });
     return res.status(201).send(reto);
   } catch (error) { 
     return res.status(400).send(error);
@@ -76,29 +82,15 @@ retoRouter.get('/challenges', async (req, res) => {
   try {
     const reto = await Reto.findOne(filter); 
     if(reto) {
-      let rutas: string[] = [];
-      let usuariosRealizaron: string[] = [];
-
-      for (let i = 0; i < reto.rutas.length; i++) {
-        const ruta = await Ruta.findById(reto.rutas[i]);
-        if (!ruta) {
-          return res.status(404).send({
-            error: "Ruta no encontrada"
-          });
-        }
-        rutas.push(ruta.nombre);
-      }
-      for(let i = 0; i < reto.usuariosRealizaron.length; i++) {
-        const usuario = await Usuario.findById(reto.usuariosRealizaron[i]);
-        if (!usuario) {
-          return res.status(404).send({
-            error: "Usuario no encontrado"
-          });
-        }
-        usuariosRealizaron.push(usuario.ID)
-      }
-      let retoJson: retoJSON = {ID: reto.ID, nombre: reto.nombre, rutas: rutas, tipoActividad: reto.tipoActividad, kmTotales: reto.kmTotales, usuariosRealizaron: usuariosRealizaron}
-      return res.status(201).send(retoJson);
+      await reto.populate({
+        path: 'rutas',
+        select: ['ID', 'nombre']
+      });
+      await reto.populate({
+        path: 'usuariosRealizaron',
+        select: ['ID', 'nombre']
+      });
+      return res.status(201).send(reto);
     } else {
       return res.status(404).send();
     }
@@ -117,29 +109,15 @@ retoRouter.get('/challenges/:id', async (req, res) => { // :id
   try {
     const reto = await Reto.findOne(filter); 
     if(reto) {
-      let rutas: string[] = [];
-      let usuariosRealizaron: string[] = [];
-
-      for (let i = 0; i < reto.rutas.length; i++) {
-        const ruta = await Ruta.findById(reto.rutas[i]);
-        if (!ruta) {
-          return res.status(404).send({
-            error: "Ruta no encontrada"
-          });
-        }
-        rutas.push(ruta.nombre);
-      }
-      for(let i = 0; i < reto.usuariosRealizaron.length; i++) {
-        const usuario = await Usuario.findById(reto.usuariosRealizaron[i]);
-        if (!usuario) {
-          return res.status(404).send({
-            error: "Usuario no encontrado"
-          });
-        }
-        usuariosRealizaron.push(usuario.ID)
-      }
-      let retoJson: retoJSON = {ID: reto.ID, nombre: reto.nombre, rutas: rutas, tipoActividad: reto.tipoActividad, kmTotales: reto.kmTotales, usuariosRealizaron: usuariosRealizaron}
-      return res.status(201).send(retoJson);
+      await reto.populate({
+        path: 'rutas',
+        select: ['ID', 'nombre']
+      });
+      await reto.populate({
+        path: 'usuariosRealizaron',
+        select: ['ID', 'nombre']
+      });
+      return res.status(201).send(reto);
     } else {
       return res.status(404).send();
     }
@@ -164,6 +142,7 @@ retoRouter.patch('/challenges', async (req, res) => {
     const reto = await Reto.findOne({
       nombre: req.query.nombre
     });
+
     if (!reto) {
       return res.status(404).send({
         error: "Reto no encontrado"
@@ -179,28 +158,30 @@ retoRouter.patch('/challenges', async (req, res) => {
         error: 'Reto no permitido',
       });
     }
+
     let rutasRef: typeof Ruta[] = [];
     let rutas: string[] = req.body.rutas;
     let usuariosRealizaronRef: typeof Usuario[] = [];
     let usuariosRealizaron: string[] = req.body.usuariosRealizaron;
-
+    let km_totales: number = 0;
     if (req.body.rutas) {
-
       for (let i = 0; i < rutas.length; i++) {
-        const ruta = await Ruta.findOne(reto.rutas[i]._id);
+        const ruta = await Ruta.findOne({ID: rutas[i]});
         if (!ruta) {
           return res.status(404).send({
             error: "Ruta no encontrada"
           });
         }
+        km_totales += ruta.longitud;
         rutasRef.push(ruta._id);
       }
       req.body.rutas = rutasRef;
+      req.body.kmTotales = km_totales;
     }
 
     if (req.body.usuariosRealizaron) {
       for (let i = 0; i < reto.usuariosRealizaron.length; i++) {
-        const usuario = await Usuario.findById(reto.usuariosRealizaron[i]);
+        const usuario = await Usuario.findById(reto.usuariosRealizaron[i]._id);
         if (!usuario) {
           return res.status(404).send({
             error: "Usuario no encontrado" 
@@ -231,16 +212,127 @@ retoRouter.patch('/challenges', async (req, res) => {
       }
       req.body.usuariosRealizaron = usuariosRealizaronRef;
     }
-
     const reti = await Reto.findOneAndUpdate(reto._id, req.body, {
       new: true,
       runValidators: true
     })
 
     if (reti) {
+      await reti.populate({
+        path: 'rutas',
+        select: ['ID', 'nombre']
+      });
+      await reti.populate({
+        path: 'usuariosRealizaron',
+        select: ['ID', 'nombre']
+      });
       return res.status(201).send(reti);
     }
     return res.status(404).send();
+
+  }catch (error) {
+    return res.status(500).send(error);
+  }
+});
+
+/**
+ * Actualizar un reto,
+ * modificando cuales quiera de sus valores,
+ * a través de su ID, introducido en la URL
+ */
+retoRouter.patch('/challenges/:id', async (req, res) => {
+  try {
+    const reto = await Reto.findOne({
+      ID: req.params.id
+    });
+
+    if (!reto) {
+      return res.status(404).send({
+        error: "Reto no encontrado"
+      });
+    }
+
+    const allowedUpdates = ['nombre', 'rutas', 'tipoActividad', 'usuariosRealizaron']
+    const actualUpdates = Object.keys(req.body);
+    const isValidUpdate = actualUpdates.every((update) => allowedUpdates.includes(update));
+
+    if (!isValidUpdate) {
+      return res.status(400).send({
+        error: 'Reto no permitido',
+      });
+    }
+
+    let rutasRef: typeof Ruta[] = [];
+    let rutas: string[] = req.body.rutas;
+    let usuariosRealizaronRef: typeof Usuario[] = [];
+    let usuariosRealizaron: string[] = req.body.usuariosRealizaron;
+    let km_totales: number = 0;
+    if (req.body.rutas) {
+      for (let i = 0; i < rutas.length; i++) {
+        const ruta = await Ruta.findOne({ID: rutas[i]});
+        if (!ruta) {
+          return res.status(404).send({
+            error: "Ruta no encontrada"
+          });
+        }
+        km_totales += ruta.longitud;
+        rutasRef.push(ruta._id);
+      }
+      req.body.rutas = rutasRef;
+      req.body.kmTotales = km_totales;
+    }
+
+    if (req.body.usuariosRealizaron) {
+      for (let i = 0; i < reto.usuariosRealizaron.length; i++) {
+        const usuario = await Usuario.findById(reto.usuariosRealizaron[i]._id);
+        if (!usuario) {
+          return res.status(404).send({
+            error: "Usuario no encontrado" 
+          });
+        }
+  
+        const indexReto = usuario.retosActivos.findIndex(re => {re.ID === reto.ID});
+        usuario.retosActivos.splice(indexReto, 1);
+        await Usuario.findOneAndUpdate(usuario._id, {retosActivos: usuario.retosActivos}, {
+          new: true,
+          runValidators: true
+        })
+      }
+
+      for (let i = 0; i < usuariosRealizaron.length; i++) {
+        const usuario = await Usuario.findOne({ID: usuariosRealizaron[i]});
+        if (!usuario) {
+          return res.status(404).send({
+            error: "Usuario no encontrado" 
+          });
+        }
+        usuariosRealizaronRef.push(usuario._id)
+        usuario.retosActivos.push(reto._id);
+        await Usuario.findOneAndUpdate(usuario._id, {retosActivos: usuario.retosActivos}, {
+          new: true,
+          runValidators: true
+        })
+      }
+      req.body.usuariosRealizaron = usuariosRealizaronRef;
+    }
+    const reti = await Reto.findOneAndUpdate(reto._id, req.body, {
+      new: true,
+      runValidators: true
+    })
+
+    if (reti) {
+      await reti.populate({
+        path: 'rutas',
+        select: ['ID', 'nombre']
+      });
+      await reti.populate({
+        path: 'usuariosRealizaron',
+        select: ['ID', 'nombre']
+      });
+      return res.status(201).send(reti);
+    }
+    return res.status(404).send();
+
   }catch (error) {
     return res.status(500).send(error);
   }
@@ -285,6 +377,14 @@ retoRouter.delete('/challenges', async (req, res) => {
     }
 
     await Reto.findByIdAndDelete(reto._id);
+    await reto.populate({
+        path: 'rutas',
+        select: ['ID', 'nombre']
+      });
+      await reto.populate({
+        path: 'usuariosRealizaron',
+        select: ['ID', 'nombre']
+      });
     return res.status(201).send(reto);
   }catch (error) {
     return res.status(500).send(error);
@@ -324,6 +424,14 @@ retoRouter.delete('/challenges/:id', async (req, res) => {
     }
 
     await Reto.findByIdAndDelete(reto._id);
+    await reto.populate({
+        path: 'rutas',
+        select: ['ID', 'nombre']
+      });
+      await reto.populate({
+        path: 'usuariosRealizaron',
+        select: ['ID', 'nombre']
+      });
     return res.status(201).send(reto);
   }catch (error) {
     return res.status(500).send(error);

@@ -1,6 +1,8 @@
 import express from 'express';
-import { Ruta, rutaJSON } from '../models/ruta.js';
+import { Ruta } from '../models/ruta.js';
 import { Usuario } from '../models/usuario.js';
+import { Grupo } from '../models/grupo.js';
+import { Reto } from '../models/reto.js';
 
 export const rutaRouter = express.Router();
 
@@ -8,19 +10,7 @@ export const rutaRouter = express.Router();
  * Crear una ruta
  */
 rutaRouter.post('/tracks', async (req, res) => {
-  //let usuariosRealizaronRef: typeof Usuario[] = [];
-  //let usuariosRealizaron: string[] = req.body.usuariosRealizaron;
-
   try {
-    /*for (let i = 0; i < usuariosRealizaron.length; i++) {
-      const track = await Usuario.findOne({ID: usuariosRealizaron[i]});
-      if (!track) {
-        return res.status(404).send({
-          error: "Usuario no encontrado" 
-        });
-      }
-      usuariosRealizaronRef.push(track._id);
-    }*/
     const ruta = new Ruta(req.body);
 
     await ruta.save();
@@ -45,20 +35,12 @@ rutaRouter.get('/tracks', async (req, res) => {
   try {
     const ruta = await Ruta.findOne(filter); 
     if (ruta) {
-      let usuarios: string[] =  [];
-      for (let i = 0; i < ruta.usuariosRealizaron.length; i++) {
-        const user = await Usuario.findById(ruta.usuariosRealizaron[i]);
-        if (!user) {
-          return res.status(404).send({
-            error: "User not found"
-          });
-        }
-
-        usuarios.push(user.ID);
-      }
-
-      let rutaJson: rutaJSON = {ID: ruta.ID, nombre: ruta.nombre, geolocalizacionInicio: ruta.geolocalizacionInicio, geolocalizacionFinal: ruta.geolocalizacionFinal, longitud: ruta.longitud, desnivel: ruta.desnivel, usuariosRealizaron: usuarios, tipoActividad: ruta.tipoActividad, calificacion: ruta.calificacion};
-      return res.status(201).send(rutaJson);
+      await ruta.populate({
+        path: 'usuariosRealizaron',
+        select: ['ID', 'nombre']
+      });
+      
+      return res.status(201).send(ruta);
     } else {
       return res.status(404).send();
     }
@@ -79,20 +61,12 @@ rutaRouter.get('/tracks/:id', async (req, res) => { // :id
     const ruta = await Ruta.findOne(filter); 
     
     if (ruta) {
-      let usuarios: string[] =  [];
-      for (let i = 0; i < ruta.usuariosRealizaron.length; i++) {
-        const user = await Usuario.findById(ruta.usuariosRealizaron[i]);
-        if (!user) {
-          return res.status(404).send({
-            error: "User not found"
-          });
-        }
+      await ruta.populate({
+        path: 'usuariosRealizaron',
+        select: ['ID', 'nombre']
+      });
 
-        usuarios.push(user.ID);
-      }
-
-      let rutaJson: rutaJSON = {ID: ruta.ID, nombre: ruta.nombre, geolocalizacionInicio: ruta.geolocalizacionInicio, geolocalizacionFinal: ruta.geolocalizacionFinal, longitud: ruta.longitud, desnivel: ruta.desnivel, usuariosRealizaron: usuarios, tipoActividad: ruta.tipoActividad, calificacion: ruta.calificacion};
-      return res.status(201).send(rutaJson);
+      return res.status(201).send(ruta);
     } else {
       return res.status(404).send();
     }
@@ -131,17 +105,22 @@ rutaRouter.patch('/tracks', async (req, res) => {
 
     if (!isValidUpdate) {
       return res.status(400).send({
-        error: 'Ruta no permitida',
+        error: 'Opciones no permitidas',
       });
     }
 
-    const note = await Ruta.findOneAndUpdate(ruta._id, req.body, {
+    const track = await Ruta.findOneAndUpdate(ruta._id, req.body, {
       new: true,
       runValidators: true
     })
 
-    if (note) {
-      return res.status(201).send(note);
+    if (track) {
+      await track.populate({
+        path: 'usuariosRealizaron',
+        select: ['ID', 'nombre']
+      });
+
+      return res.status(201).send(track);
     }
     return res.status(404).send();
   } catch (error) {
@@ -173,17 +152,22 @@ rutaRouter.patch('/tracks/:id', async (req, res) => {
 
     if (!isValidUpdate) {
       return res.status(400).send({
-        error: 'Ruta no permitida',
+        error: 'Opciones no permitidas',
       });
     }
 
-    const note = await Ruta.findOneAndUpdate(ruta._id, req.body, {
+    const track = await Ruta.findOneAndUpdate(ruta._id, req.body, {
       new: true,
       runValidators: true
     })
 
-    if (note) {
-      return res.status(201).send(note);
+    if (track) {
+      await track.populate({
+        path: 'usuariosRealizaron',
+        select: ['ID', 'nombre']
+      });
+
+      return res.status(201).send(track);
     }
     return res.status(404).send();
   } catch (error) {
@@ -213,7 +197,81 @@ rutaRouter.delete('/tracks', async (req, res) => {
       });
     }
 
+    for (let i = 0; i < ruta.usuariosRealizaron.length; i++) { // Borramos la ruta de los usuarios
+      const user = await Usuario.findById(ruta.usuariosRealizaron[i]);
+      if (user) {
+        // Buscamos y eliminamos de rutas Favoritas de usuarios
+        const indexTrack = user.rutasFavoritas.findIndex((track) => track._id.toString() === ruta._id.toString());
+        if (indexTrack != -1) {
+          user.rutasFavoritas.splice(indexTrack, 1);
+        }
+
+        // Buscamos y eliminamos rutas de historico rutas
+        for (let i = 0; i < user.historicoRutas.length; i++) {
+          if (user.historicoRutas[i][1] === ruta._id.toString()) {
+            user.historicoRutas.splice(i, 1);
+            i--;
+          }
+        }
+
+        await Usuario.findOneAndUpdate(user._id, {rutasFavoritas: user.rutasFavoritas, historicoRutas: user.historicoRutas}, {
+          new: true,
+          runValidators: true
+        })
+      }
+    }
+
+    const groups = await Grupo.find({rutasFavoritas: ruta._id.toString()})
+    if (groups.length != 0) {
+      for (let i = 0; i < groups.length; i++) { // Borramos la ruta de los grupos
+        const group = await Grupo.findById(groups[i]._id);
+        if (group) {
+          // Buscamos y eliminamos de rutas Favoritas de grupos
+          const indexTrack = group.rutasFavoritas.findIndex((track) => track._id.toString() === ruta._id.toString());
+          if (indexTrack != -1) {
+            group.rutasFavoritas.splice(indexTrack, 1);
+          }
+  
+          // Buscamos y eliminamos rutas de historico rutas
+          for (let i = 0; i < group.historicoRutas.length; i++) {
+            if (group.historicoRutas[i][1] === ruta._id.toString()) {
+              group.historicoRutas.splice(i, 1);
+              i--;
+            }
+          }
+  
+          await Grupo.findOneAndUpdate(group._id, {rutasFavoritas: group.rutasFavoritas, historicoRutas: group.historicoRutas}, {
+            new: true,
+            runValidators: true
+          })
+        }
+      }
+    }
+
+    const challenges = await Reto.find({rutas: ruta._id.toString()})
+    if (challenges.length != 0) {
+      for (let i = 0; i < challenges.length; i++) { // Borramos la ruta de los retos
+        const reto = await Reto.findById(challenges[i]._id);
+        if (reto) {
+          // Buscamos y eliminamos de rutas de los retos
+          const indexTrack = reto.rutas.findIndex((track) => track._id.toString() === ruta._id.toString());
+          if (indexTrack != -1) {
+            reto.rutas.splice(indexTrack, 1);
+          }
+  
+          await Reto.findOneAndUpdate(reto._id, {rutas: reto.rutas}, {
+            new: true,
+            runValidators: true
+          })
+        }
+      }
+    }
+
     await Ruta.findByIdAndDelete(ruta._id);
+    await ruta.populate({
+      path: 'usuariosRealizaron',
+      select: ['ID', 'nombre']
+    });
     return res.status(201).send(ruta);
   } catch (error) {
     return res.status(500).send(error);
@@ -236,7 +294,81 @@ rutaRouter.delete('/tracks/:id', async (req, res) => {
       });
     }
 
+    for (let i = 0; i < ruta.usuariosRealizaron.length; i++) { // Borramos la ruta de los usuarios
+      const user = await Usuario.findById(ruta.usuariosRealizaron[i]);
+      if (user) {
+        // Buscamos y eliminamos de rutas Favoritas de usuarios
+        const indexTrack = user.rutasFavoritas.findIndex((track) => track._id.toString() === ruta._id.toString());
+        if (indexTrack != -1) {
+          user.rutasFavoritas.splice(indexTrack, 1);
+        }
+
+        // Buscamos y eliminamos rutas de historico rutas
+        for (let i = 0; i < user.historicoRutas.length; i++) {
+          if (user.historicoRutas[i][1] === ruta._id.toString()) {
+            user.historicoRutas.splice(i, 1);
+            i--;
+          }
+        }
+
+        await Usuario.findOneAndUpdate(user._id, {rutasFavoritas: user.rutasFavoritas, historicoRutas: user.historicoRutas}, {
+          new: true,
+          runValidators: true
+        })
+      }
+    }
+
+    const groups = await Grupo.find({rutasFavoritas: ruta._id.toString()})
+    if (groups.length != 0) {
+      for (let i = 0; i < groups.length; i++) { // Borramos la ruta de los grupos
+        const group = await Grupo.findById(groups[i]._id);
+        if (group) {
+          // Buscamos y eliminamos de rutas Favoritas de grupos
+          const indexTrack = group.rutasFavoritas.findIndex((track) => track._id.toString() === ruta._id.toString());
+          if (indexTrack != -1) {
+            group.rutasFavoritas.splice(indexTrack, 1);
+          }
+  
+          // Buscamos y eliminamos rutas de historico rutas
+          for (let i = 0; i < group.historicoRutas.length; i++) {
+            if (group.historicoRutas[i][1] === ruta._id.toString()) {
+              group.historicoRutas.splice(i, 1);
+              i--;
+            }
+          }
+  
+          await Grupo.findOneAndUpdate(group._id, {rutasFavoritas: group.rutasFavoritas, historicoRutas: group.historicoRutas}, {
+            new: true,
+            runValidators: true
+          })
+        }
+      }
+    }
+
+    const challenges = await Reto.find({rutas: ruta._id.toString()})
+    if (challenges.length != 0) {
+      for (let i = 0; i < challenges.length; i++) { // Borramos la ruta de los retos
+        const reto = await Reto.findById(challenges[i]._id);
+        if (reto) {
+          // Buscamos y eliminamos de rutas de los retos
+          const indexTrack = reto.rutas.findIndex((track) => track._id.toString() === ruta._id.toString());
+          if (indexTrack != -1) {
+            reto.rutas.splice(indexTrack, 1);
+          }
+  
+          await Reto.findOneAndUpdate(reto._id, {rutas: reto.rutas}, {
+            new: true,
+            runValidators: true
+          })
+        }
+      }
+    }
+
     await Ruta.findByIdAndDelete(ruta._id);
+    await ruta.populate({
+      path: 'usuariosRealizaron',
+      select: ['ID', 'nombre']
+    });
     return res.status(201).send(ruta);
   } catch (error) {
     return res.status(500).send(error);

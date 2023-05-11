@@ -74,15 +74,3 @@ const RutaSchema = new Schema<RutaDocumentInterface>({
 });
 
 export const Ruta = model<RutaDocumentInterface>('Ruta', RutaSchema);
-
-export type rutaJSON = {
-  ID: number,
-  nombre: string,
-  geolocalizacionInicio: [number, number],
-  geolocalizacionFinal: [number, number],
-  longitud: number,
-  desnivel: number,
-  usuariosRealizaron: string[],
-  tipoActividad: 'bicicleta' | 'correr',
-  calificacion: number
-}
