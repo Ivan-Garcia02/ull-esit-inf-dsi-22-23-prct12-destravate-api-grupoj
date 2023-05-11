@@ -187,7 +187,7 @@ retoRouter.patch('/challenges', async (req, res) => {
     if (req.body.rutas) {
 
       for (let i = 0; i < rutas.length; i++) {
-        const ruta = await Ruta.findByOne(reto.rutas[i]._id);
+        const ruta = await Ruta.findOne(reto.rutas[i]._id);
         if (!ruta) {
           return res.status(404).send({
             error: "Ruta no encontrada"
