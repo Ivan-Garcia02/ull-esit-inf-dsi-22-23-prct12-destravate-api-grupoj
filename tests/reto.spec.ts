@@ -119,7 +119,24 @@ describe('PATCH /challenges', () => {
       usuariosRealizaron: ['usuarioInicial']
     }).expect(201);
   });
+  it('Should patch a challenges by name, but not the track', async () => {
+    await request(app).patch('/challenges/2').send({
+      rutas: [12],
+    }).expect(404);
+  });
 
+  it('Should patch a challenges by name, but not the user', async () => {
+    await request(app).patch('/challenges/2').send({
+      usuariosRealizaron: [21]
+    }).expect(404);
+  });
+
+  it('Should patch a challenges by name, but challenge is not permmited', async () => {
+    await request(app).patch('/challenges/2').send({
+      ID: 7,
+      usuariosRealizaron: [21]
+    }).expect(400);
+  });
   it('Should not find a challenges by ID', async () => {
     await request(app).patch('/challenges/12').send({
       nombre: 5

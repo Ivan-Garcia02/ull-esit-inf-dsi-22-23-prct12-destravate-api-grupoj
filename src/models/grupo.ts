@@ -15,7 +15,7 @@ export interface GrupoDocumentInterface extends Document {
   ID: number,
   nombre: string,
   participantes: UsuarioDocumentInterface[],
-  estadisticasEntrenamiento: [number, number, string, number],
+  estadisticasEntrenamiento: [number, number, number, number],
   clasificacionUsuarios: UsuarioDocumentInterface[],
   rutasFavoritas: RutaDocumentInterface[],
   historicoRutas: [string, RutaDocumentInterface][],
@@ -40,7 +40,7 @@ const GrupoSchema = new Schema<GrupoDocumentInterface>({
     ref: 'Usuario',
   },
   estadisticasEntrenamiento: {
-    type: [Number, Number, String, Number],
+    type: [Number, Number, Number, Number],
     required: true,
   },
   clasificacionUsuarios: {
@@ -66,7 +66,7 @@ export type grupoJSON = {
   ID: number,
   nombre: string,
   participantes: UsuarioDocumentInterface[],
-  estadisticasEntrenamiento: [number, number, string, number],
+  estadisticasEntrenamiento: [number, number, number, number],
   clasificacionUsuarios: [number, string][],
   rutasFavoritas: RutaDocumentInterface[],
   historicoRutas: [string, string][],

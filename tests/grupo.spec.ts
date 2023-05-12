@@ -15,37 +15,10 @@ const primerGrupo = {
   historicoRutas: [],
 }
 
-const primerUsuario = {
-  ID: "usuarioInicial",
-  nombre: "Usuario Tests",
-  tipoActividad: 'bicicleta',
-  amigos: [],
-  grupoAmigos: [],
-  estadisticasEntrenamiento: [12, 13, 12, 14],
-  rutasFavoritas: [],
-  retosActivos: [],
-  historicoRutas: [],
-}
-
-const segundoUsuario = {
-  ID: "usuarioSegundo",
-  nombre: "Usuario Tests 2",
-  tipoActividad: 'bicicleta',
-  amigos: [],
-  grupoAmigos: [],
-  estadisticasEntrenamiento: [15, 13, 12, 14],
-  rutasFavoritas: [],
-  retosActivos: [],
-  historicoRutas: [],
-}
-
-
 beforeEach(async () => {
   await Usuario.deleteMany();
   await Ruta.deleteMany();
   await Grupo.deleteMany();
-  await new Usuario(primerUsuario).save();
-  await new Usuario(segundoUsuario).save();
   await new Grupo(primerGrupo).save();
 });
 
@@ -68,10 +41,10 @@ describe('POST /groups', () => {
       ID: 2,
       nombre: "Begginers",
       participantes: ["usuarioSegundo", "usuarioInicial"],
-      estadisticasEntrenamiento: [],
-      clasificacionUsuarios: [],
+      estadisticasEntrenamiento: [12, 13, 14, 15],
+      clasificacionUsuarios: ["usuarioInicial", "usuarioSegundo"],
       rutasFavoritas: [1],
-      historicoRutas: [],
+      historicoRutas: [["hola", 1]],
     }).expect(201);
   });
 
@@ -80,8 +53,8 @@ describe('POST /groups', () => {
       ID: 3,
       nombre: "Novatos",
       participantes: ["usuarioSegundo"],
-      estadisticasEntrenamiento: [],
-      clasificacionUsuarios: [],
+      estadisticasEntrenamiento: [16, 17, 18, 19],
+      clasificacionUsuarios: ["usuarioInicial"],
       rutasFavoritas: [],
       historicoRutas: [],
     }).expect(400);
