@@ -5,35 +5,14 @@ import { Usuario } from '../src/models/usuario.js'
 import { Ruta } from '../src/models/ruta.js'
 import { Reto } from '../src/models/reto.js'
 
-const primeraRuta = {
-  ID: 1,
-  nombre: "Laurisilva De Felipe",
-  geolocalizacionInicio: [12,50],
-  geolocalizacionFinal: [20,2],
-  longitud: 2002,
-  desnivel: 200,
-  usuariosRealizaron: [],
-  tipoActividad: 'bicicleta',
-  calificacion: 6
-}
-
-const primerReto = {
-  ID: 2,
-  nombre: 'Subida',
-  rutas: [],
-  tipoActividad: 'correr',
-  kmTotales: 0,
-  usuariosRealizaron: []
-}
-
 const primerUsuario = {
   ID: "usuarioInicial",
   nombre: "Usuario Tests",
   tipoActividad: 'bicicleta',
   amigos: [],
-  grupoAmigos: [],
+  grupoAmigos: ["Novatos"],
   estadisticasEntrenamiento: [12, 13, 12, 14],
-  rutasFavoritas: [],
+  rutasFavoritas: ["Laurisilva De Felipe"],
   retosActivos: [],
   historicoRutas: [],
 }
@@ -43,9 +22,9 @@ const segundoUsuario = {
   nombre: "Usuario Tests 2",
   tipoActividad: 'bicicleta',
   amigos: [],
-  grupoAmigos: [],
+  grupoAmigos: ["Novatos"],
   estadisticasEntrenamiento: [15, 13, 12, 14],
-  rutasFavoritas: [],
+  rutasFavoritas: ["Laurisilva De Felipe"],
   retosActivos: [],
   historicoRutas: [],
 }
@@ -67,10 +46,10 @@ describe('POST /users', () => {
       nombre: "Laurisilva de Pepe",
       tipoActividad: 'correr',
       amigos: ["usuarioSegundo", "usuarioInicial"],
-      grupoAmigos: [],
+      grupoAmigos: ["Novatos"],
       estadisticasEntrenamiento: [12, 13, 12, 14],
-      rutasFavoritas: [],
-      retosActivos: [],
+      rutasFavoritas: ["Laurisilva De Felipe"],
+      retosActivos: [2],
       historicoRutas: [],
     }).expect(201);
   });

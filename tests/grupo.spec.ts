@@ -8,10 +8,10 @@ import { Ruta } from '../src/models/ruta.js'
 const primerGrupo = {
   ID: 1,
   nombre: "Novatos",
-  participantes: [],
-  estadisticasEntrenamiento: [],
-  clasificacionUsuarios: [],
-  rutasFavoritas: [],
+  participantes: ["usuarioSegundo", "usuarioInicial"],
+  estadisticasEntrenamiento: [12, 13, 12, 14],
+  clasificacionUsuarios: ["usuarioInicial", "usuarioSegundo"],
+  rutasFavoritas: [1],
   historicoRutas: [],
 }
 
@@ -21,18 +21,6 @@ beforeEach(async () => {
   await Grupo.deleteMany();
   await new Grupo(primerGrupo).save();
 });
-
-describe('Previaaaa temporal', () => {
-
-  it('PREVIA TEMPORAL ', async () => {
-    await request(app).get('/users/usuarioInicial').expect(201);
-  });
-
-  it('222 PREVIA TEMPORAL', async () => {
-    await request(app).get('/users/usuarioSegundo').expect(201);
-  });
-
-}); 
 
 describe('POST /groups', () => {
 
