@@ -9,7 +9,7 @@
 
 ## Resumen
 <!-- qué se hace y para que se hace -->
-Esta práctica consiste en implementar un API REST haciendo uso del servidor express y de node.js. Además, será necesario hacer uso de las operaciones CRUD de creación, lectura, modificación y borrado.
+Esta práctica consiste en implementar un API REST haciendo uso del servidor express y de node.js. Además, será necesario hacer uso de las operaciones CRUD de creación, lectura, modificación y borrado. 
 
 ## Coveralls
 
@@ -20,6 +20,28 @@ Esta práctica consiste en implementar un API REST haciendo uso del servidor exp
 2. [Reto](#reto)
 3. [Ruta](#ruta)
 4. [Usuario](#usuario)
+
+### Grupo
+
+### Reto
+
+### Ruta
+Para cada ruta incluida dentro del sistema, se debe almacenar la información siguiente:
+
+- ID único de la ruta.
+
+- Nombre de la ruta.
+
+- Geolocalización del inicio (coordenadas).
+
+- Geolocalización del final de la ruta (coordenadas).
+
+Longitud de la ruta en kilómetros.
+Desnivel medio de la ruta.
+Usuarios que han realizado la ruta (IDs).
+Tipo de actividad: Indicador si la ruta se puede realizar en bicicleta o corriendo.
+Calificación media de la ruta.
+### Usuario
 
 ## Conclusiones
 <!-- propuestas de mejoras, con que me quedé al final -->
