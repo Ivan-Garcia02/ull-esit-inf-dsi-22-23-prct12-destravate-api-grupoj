@@ -96,6 +96,12 @@ describe('PATCH /challenges', () => {
       usuariosRealizaron: [21]
     }).expect(404);
   });
+  it('Should patch a challenges by name, but track is not permmited', async () => {
+    await request(app).patch('/challenges?nombre=Subida').send({
+      ID
+      usuariosRealizaron: [21]
+    }).expect(404);
+  });
   it('Should not find a challenges by name', async () => {
     await request(app).patch('/challenges?nombre=Pseudo Tour de Francia').send({
       rutas: [12],
