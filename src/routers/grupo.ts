@@ -121,6 +121,25 @@ grupoRouter.get('/groups', async (req, res) => {
     const grupo = await Grupo.findOne(filter); 
     if (grupo && grupo.participantes !== null) {
       let historicoRutas: [string, string][] = [];
+      let clasificacionUsuariosTupla: [number, string][] = [];
+
+      for (let i = 0; i < grupo.participantes.length; i++) { // Comprobamos que los usuarios introducidos existan y obtenemos sus kmtotales
+        const user = await Usuario.findById(grupo.participantes[i]);
+        if (!user) {
+          return res.status(404).send({
+            error: "User not found"
+          });
+        } 
+        // Obtenemos los kilometros totales del usuario para despues oredenar
+        clasificacionUsuariosTupla.push([0, user.ID]);
+        for (let j = 0; j < user.historicoRutas.length; j++) {
+          const track = await Ruta.findById(user.historicoRutas[j][1]);
+          if (track) {
+            clasificacionUsuariosTupla[i][0] = clasificacionUsuariosTupla[i][0] + track.longitud;
+          }
+        }
+      }
+      clasificacionUsuariosTupla.sort((a, b) => b[0] - a[0]); // Ordenamos el ranking de usuarios según los participantes
 
       for (let i = 0; i < grupo.historicoRutas.length; i++) {
         const track = await Ruta.findById(grupo.historicoRutas[i][1]);
@@ -146,7 +165,7 @@ grupoRouter.get('/groups', async (req, res) => {
         select: ['ID', 'nombre']
       }); 
 
-      let grupoJson: grupoJSON = {ID: grupo.ID, nombre: grupo.nombre, participantes: grupo.participantes, estadisticasEntrenamiento: grupo.estadisticasEntrenamiento, clasificacionUsuarios: grupo.clasificacionUsuarios, rutasFavoritas: grupo.rutasFavoritas, historicoRutas: historicoRutas};
+      let grupoJson: grupoJSON = {ID: grupo.ID, nombre: grupo.nombre, participantes: grupo.participantes, estadisticasEntrenamiento: grupo.estadisticasEntrenamiento, clasificacionUsuarios: clasificacionUsuariosTupla, rutasFavoritas: grupo.rutasFavoritas, historicoRutas: historicoRutas};
       return res.status(201).send(grupoJson);
     } else {
       return res.status(404).send();
@@ -168,6 +187,25 @@ grupoRouter.get('/groups/:id', async (req, res) => { // :id
     const grupo = await Grupo.findOne(filter); 
     if (grupo && grupo.participantes !== null) {
       let historicoRutas: [string, string][] = [];
+      let clasificacionUsuariosTupla: [number, string][] = [];
+
+      for (let i = 0; i < grupo.participantes.length; i++) { // Comprobamos que los usuarios introducidos existan y obtenemos sus kmtotales
+        const user = await Usuario.findById(grupo.participantes[i]);
+        if (!user) {
+          return res.status(404).send({
+            error: "User not found"
+          });
+        } 
+        // Obtenemos los kilometros totales del usuario para despues oredenar
+        clasificacionUsuariosTupla.push([0, user.ID]);
+        for (let j = 0; j < user.historicoRutas.length; j++) {
+          const track = await Ruta.findById(user.historicoRutas[j][1]);
+          if (track) {
+            clasificacionUsuariosTupla[i][0] = clasificacionUsuariosTupla[i][0] + track.longitud;
+          }
+        }
+      }
+      clasificacionUsuariosTupla.sort((a, b) => b[0] - a[0]); // Ordenamos el ranking de usuarios según los participantes
 
       for (let i = 0; i < grupo.historicoRutas.length; i++) {
         const track = await Ruta.findById(grupo.historicoRutas[i][1]);
@@ -193,7 +231,7 @@ grupoRouter.get('/groups/:id', async (req, res) => { // :id
         select: ['ID', 'nombre']
       }); 
 
-      let grupoJson: grupoJSON = {ID: grupo.ID, nombre: grupo.nombre, participantes: grupo.participantes, estadisticasEntrenamiento: grupo.estadisticasEntrenamiento, clasificacionUsuarios: grupo.clasificacionUsuarios, rutasFavoritas: grupo.rutasFavoritas, historicoRutas: historicoRutas};
+      let grupoJson: grupoJSON = {ID: grupo.ID, nombre: grupo.nombre, participantes: grupo.participantes, estadisticasEntrenamiento: grupo.estadisticasEntrenamiento, clasificacionUsuarios: clasificacionUsuariosTupla, rutasFavoritas: grupo.rutasFavoritas, historicoRutas: historicoRutas};
       return res.status(201).send(grupoJson);
     } else {
       return res.status(404).send();

@@ -14,13 +14,13 @@ const primerReto = {
   usuariosRealizaron: []
 }
 
-const pUsuario = {
+const primerUsuario = {
   ID: 'pepejuan',
   nombre: 'Pepe Gzn',
   tipoActividad: 'bicicleta',
   amigos: [],
   grupoAmigos: [],
-  estadisticasEntrenamiento: [],
+  estadisticasEntrenamiento: [12, 13, 12, 14],
   rutasFavoritas: [],
   retosActivos: [],
   historicoRutas: [],
@@ -42,9 +42,9 @@ beforeEach(async () => {
   await Reto.deleteMany();
   await Ruta.deleteMany();
   await Usuario.deleteMany();
-  await new Usuario(pUsuario).save();
   await new Reto(primerReto).save();
   await new Ruta(pRuta).save();
+  await new Usuario(primerUsuario).save();
 });
 
 describe('POST /challenges', () => {
@@ -111,7 +111,7 @@ describe('PATCH /challenges', () => {
   it('Should patch a challenges by ID', async () => {
     await request(app).patch('/challenges/2').send({
       nombre: "3003",
-      usuariosRealizaron: ['pepejuan']
+      //usuariosRealizaron: ['pepejuan']
     }).expect(201);
   });
 

@@ -2,6 +2,8 @@ import 'mocha'
 import request from 'supertest';
 import { app } from '../src/app.js';
 import { Usuario } from '../src/models/usuario.js'
+import { Ruta } from '../src/models/ruta.js'
+import { Reto } from '../src/models/reto.js'
 
 const primeraRuta = {
   ID: 1,
@@ -50,8 +52,12 @@ const segundoUsuario = {
 
 beforeEach(async () => {
   await Usuario.deleteMany();
+  await Reto.deleteMany();
+  await Ruta.deleteMany();
   await new Usuario(primerUsuario).save();
   await new Usuario(segundoUsuario).save();
+  await new Reto(primerReto).save();
+  await new Ruta(primeraRuta).save();
 });
   
 describe('POST /users', () => {
@@ -111,29 +117,29 @@ describe('PATCH /users', () => {
 
   it('Should patch a user by name', async () => {
     await request(app).patch('/users?nombre=Usuario Tests').send({
-      longitud: 3003,
-      desnivel: 300,
+      rutasFavoritas: [1],
+      retosActivos: [2],
     }).expect(201);
   });
 
   it('Should not find a user by name', async () => {
     await request(app).patch('/users?nombre=Laurisilva').send({
-      longitud: 3003,
-      desnivel: 300,
+      rutasFavoritas: [1],
+      retosActivos: [2],
     }).expect(404);
   });
 
   it('Should patch a user by ID', async () => {
     await request(app).patch('/users/usuarioInicial').send({
-      longitud: 3003,
-      desnivel: 300,
+      rutasFavoritas: [1],
+      retosActivos: [2],
     }).expect(201);
   });
 
   it('Should not find a user by ID', async () => {
     await request(app).patch('/users/12').send({
-      longitud: 3003,
-      desnivel: 300,
+      rutasFavoritas: [1],
+      retosActivos: [2],
     }).expect(404);
   });
 });

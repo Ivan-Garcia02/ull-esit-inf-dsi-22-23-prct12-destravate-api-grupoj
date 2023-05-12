@@ -75,8 +75,8 @@ beforeEach(async () => {
   await new Usuario(primeroUsuario).save();
   await new Grupo(primerGrupo).save();
 });
-  
-describe('POST /groups', () => {
+
+describe('Previaaaa temporal', () => {
 
   it('PREVIA TEMPORAL ', async () => {
     await request(app).get('/users/usuarioIniciales').expect(201);
@@ -85,6 +85,10 @@ describe('POST /groups', () => {
   it('222 PREVIA TEMPORAL', async () => {
     await request(app).get('/users?nombre=Usuario Testses').expect(201);
   });
+
+}); 
+
+describe('POST /groups', () => {
 
   it('Should successfully create a new group', async () => {
     await request(app).post('/groups').send({

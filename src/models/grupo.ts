@@ -67,7 +67,7 @@ export type grupoJSON = {
   nombre: string,
   participantes: UsuarioDocumentInterface[],
   estadisticasEntrenamiento: [number, number, string, number],
-  clasificacionUsuarios: UsuarioDocumentInterface[],
+  clasificacionUsuarios: [number, string][],
   rutasFavoritas: RutaDocumentInterface[],
   historicoRutas: [string, string][],
 }
