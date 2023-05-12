@@ -21,7 +21,7 @@ export interface UsuarioDocumentInterface extends Document {
   tipoActividad: 'bicicleta' | 'correr',
   amigos: UsuarioDocumentInterface[],
   grupoAmigos: GrupoDocumentInterface[],
-  estadisticasEntrenamiento: [number, number, string, number],
+  estadisticasEntrenamiento: [number, number, number, number],
   rutasFavoritas: RutaDocumentInterface[],
   retosActivos: RetoDocumentInterface[],
   historicoRutas: [string, RutaDocumentInterface][],
@@ -55,7 +55,7 @@ const UsuarioSchema = new Schema<UsuarioDocumentInterface>({
     ref: 'Grupo'
   },
   estadisticasEntrenamiento: {
-    type: [Number, Number, String, Number],
+    type: [Number, Number, Number, Number],
     required: true,
   },
   rutasFavoritas: {
@@ -81,10 +81,10 @@ export type usuarioJSON = {
   ID: string,
   nombre: string,
   tipoActividad: string,
-  amigos: string[],
-  grupoAmigos: string[],
-  estadisticasEntrenamiento: [number, number, string, number],
-  rutasFavoritas: string[],
-  retosActivos: string[],
+  amigos: UsuarioDocumentInterface[],
+  grupoAmigos: GrupoDocumentInterface[],
+  estadisticasEntrenamiento: [number, number, number, number],
+  rutasFavoritas: RutaDocumentInterface[],
+  retosActivos: RetoDocumentInterface[],
   historicoRutas: [string, string][],
 }

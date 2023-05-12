@@ -9,7 +9,7 @@ export const rutaRouter = express.Router();
 /**
  * Crear una ruta
  */
-rutaRouter.post('/tracks', async (req, res) => {
+rutaRouter.post('/tracks', async (req, res) => { // No se podra modificar los usuarios que realizaron en la ruta, se hara desde los usuarios
   try {
     const ruta = new Ruta(req.body);
 

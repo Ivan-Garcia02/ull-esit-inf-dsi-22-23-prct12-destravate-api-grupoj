@@ -65,9 +65,9 @@ export const Grupo = model<GrupoDocumentInterface>('Grupo', GrupoSchema);
 export type grupoJSON = {
   ID: number,
   nombre: string,
-  participantes: string[],
+  participantes: UsuarioDocumentInterface[],
   estadisticasEntrenamiento: [number, number, string, number],
-  clasificacionUsuarios: string[],
-  rutasFavoritas: string[],
+  clasificacionUsuarios: UsuarioDocumentInterface[],
+  rutasFavoritas: RutaDocumentInterface[],
   historicoRutas: [string, string][],
 }
