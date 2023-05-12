@@ -83,7 +83,7 @@ describe('POST /groups', () => {
       participantes: ["usuarioSegundo", "usuarioInicial"],
       estadisticasEntrenamiento: [],
       clasificacionUsuarios: [],
-      rutasFavoritas: [],
+      rutasFavoritas: ["Laurisilve"],
       historicoRutas: [],
     }).expect(201);
   });
