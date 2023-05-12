@@ -5,18 +5,6 @@ import { Grupo } from '../src/models/grupo.js'
 import { Usuario } from '../src/models/usuario.js'
 import { Ruta } from '../src/models/ruta.js'
 
-const pRuta = {
-  ID: 1,
-  nombre: "Laurisilve",
-  geolocalizacionInicio: [12,50],
-  geolocalizacionFinal: [20,2],
-  longitud: 2002,
-  desnivel: 200,
-  usuariosRealizaron: [],
-  tipoActividad: 'bicicleta',
-  calificacion: 6
-}
-
 const primerGrupo = {
   ID: 1,
   nombre: "Novatos",
@@ -56,7 +44,6 @@ beforeEach(async () => {
   await Usuario.deleteMany();
   await Ruta.deleteMany();
   await Grupo.deleteMany();
-  await new Ruta(pRuta).save();
   await new Usuario(primerUsuario).save();
   await new Usuario(segundoUsuario).save();
   await new Grupo(primerGrupo).save();
