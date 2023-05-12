@@ -17,30 +17,6 @@ const pRuta = {
   calificacion: 6
 }
 
-const pUsuario = {
-  ID: "gab",
-  nombre: "Gabriel",
-  tipoActividad: 'bicicleta',
-  amigos: [],
-  grupoAmigos: [],
-  estadisticasEntrenamiento: [13, 13, 13, 6],
-  rutasFavoritas: [],
-  retosActivos: [],
-  historicoRutas: [],
-}
-
-const p2Usuario = {
-  ID: "eric",
-  nombre: "Eric",
-  tipoActividad: 'bicicleta',
-  amigos: [],
-  grupoAmigos: [],
-  estadisticasEntrenamiento: [12, 12, 12, 3],
-  rutasFavoritas: [],
-  retosActivos: [],
-  historicoRutas: [],
-}
-
 const primerGrupo = {
   ID: 1,
   nombre: "Novatos",
@@ -51,14 +27,25 @@ const primerGrupo = {
   historicoRutas: [],
 }
 
-
-const primeroUsuario = {
-  ID: "usuarioIniciales",
-  nombre: "Usuario Testses",
+const primerUsuario = {
+  ID: "usuarioInicial",
+  nombre: "Usuario Tests",
   tipoActividad: 'bicicleta',
   amigos: [],
   grupoAmigos: [],
   estadisticasEntrenamiento: [12, 13, 12, 14],
+  rutasFavoritas: [],
+  retosActivos: [],
+  historicoRutas: [],
+}
+
+const segundoUsuario = {
+  ID: "usuarioSegundo",
+  nombre: "Usuario Tests 2",
+  tipoActividad: 'bicicleta',
+  amigos: [],
+  grupoAmigos: [],
+  estadisticasEntrenamiento: [15, 13, 12, 14],
   rutasFavoritas: [],
   retosActivos: [],
   historicoRutas: [],
@@ -70,20 +57,19 @@ beforeEach(async () => {
   await Ruta.deleteMany();
   await Grupo.deleteMany();
   await new Ruta(pRuta).save();
-  await new Usuario(pUsuario).save();
-  await new Usuario(p2Usuario).save();
-  await new Usuario(primeroUsuario).save();
+  await new Usuario(primerUsuario).save();
+  await new Usuario(segundoUsuario).save();
   await new Grupo(primerGrupo).save();
 });
 
 describe('Previaaaa temporal', () => {
 
   it('PREVIA TEMPORAL ', async () => {
-    await request(app).get('/users/usuarioIniciales').expect(201);
+    await request(app).get('/users/usuarioInicial').expect(201);
   });
 
   it('222 PREVIA TEMPORAL', async () => {
-    await request(app).get('/users?nombre=Usuario Testses').expect(201);
+    await request(app).get('/users/usuarioSegundo').expect(201);
   });
 
 }); 
@@ -94,7 +80,7 @@ describe('POST /groups', () => {
     await request(app).post('/groups').send({
       ID: 2,
       nombre: "Begginers",
-      participantes: ["eric"],
+      participantes: ["usuarioSegundo", "usuarioInicial"],
       estadisticasEntrenamiento: [],
       clasificacionUsuarios: [],
       rutasFavoritas: [],
@@ -106,7 +92,7 @@ describe('POST /groups', () => {
     await request(app).post('/groups').send({
       ID: 3,
       nombre: "Novatos",
-      participantes: [],
+      participantes: ["usuarioSegundo"],
       estadisticasEntrenamiento: [],
       clasificacionUsuarios: [],
       rutasFavoritas: [],
@@ -143,7 +129,7 @@ describe('PATCH /groups', () => {
   it('Should patch a groups by name', async () => {
     await request(app).patch('/groups?nombre=Novatos').send({
       rutasFavoritas: [1],
-      participantes: ["gab"],
+      participantes: ["usuarioInicial"],
     }).expect(201);
   });
 
@@ -157,7 +143,7 @@ describe('PATCH /groups', () => {
   it('Should patch a groups by ID', async () => {
     await request(app).patch('/groups/1').send({
       nombre: "Onlyone",
-      participantes: ["gab", "eric"],
+      participantes: ["usuarioInicial", "usuarioSegundo"],
     }).expect(201);
   });
 

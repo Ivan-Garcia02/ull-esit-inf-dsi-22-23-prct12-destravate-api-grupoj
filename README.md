@@ -16,6 +16,11 @@ Esta práctica consiste en implementar un API REST haciendo uso del servidor exp
 ## Práctica
 <!-- Explicar desarrollo de la prácica -->
 
+1. [Grupo](#grupo)
+2. [Reto](#reto)
+3. [Ruta](#ruta)
+4. [Usuario](#usuario)
+
 ## Conclusiones
 <!-- propuestas de mejoras, con que me quedé al final -->
 
