@@ -14,16 +14,13 @@
 
 ## Índice
 1. [Resumen](#resumen)
-2. [Coveralls](#coveralls)
-3. [Práctica](#práctica)
-4. [Conclusiones](#conclusiones)
-5. [Referencias](#referencias)
+2. [Práctica](#práctica)
+3. [Conclusiones](#conclusiones)
+4. [Referencias](#referencias)
 
 ## Resumen
 <!-- qué se hace y para que se hace -->
 Esta práctica consiste en implementar un API REST haciendo uso del servidor express y de node.js. Además, será necesario hacer uso de las operaciones CRUD de creación, lectura, modificación y borrado. 
-
-## Coveralls
 
 ## Práctica
 <!-- Explicar desarrollo de la prácica -->
@@ -74,7 +71,7 @@ Un grupo de usuarios engloba la información de los usuarios que se unen para re
 
 #### Models 
 
-En `/src/models/grupo.ts` se encuentra la definición del modelo de los Grupos, es decir:
+En `/src/models/reto.ts` se encuentra la definición del modelo de los Grupos, es decir:
 - Una interfaz denominada `GrupoDocumentInterface` que extiende `Document` (un recurso importado del módulo de `mongoose`) donde se establecen los atributos de un grupo.
 
 - Un `schema` de la interfaz `GrupoDocumentInterface`: `Schema<GrupoDocumentInterface>`. Dentro de dicho `schema` se establece que:
@@ -137,6 +134,10 @@ Para trabajar de manera más óptima y eficiente definimos en `/src/routers/grup
   Empleando `populate` actualizamos los atributos `participantes`, `rutasFavoritas` y `clasificacionUsuarios`.
 
 ### Reto
+
+#### Contexto 
+En la ruta `/challenges` del API, se deberá poder crear, leer, actualizar o borrar una reto a través de los métodos HTTP necesarios.
+
 Los retos serán otra entidad dentro del sistema. Esta entidad deberá contener toda la información asociada a objetivos de entrenamientos:
 
 - ID único del reto.
@@ -151,6 +152,50 @@ Los retos serán otra entidad dentro del sistema. Esta entidad deberá contener 
 
 - Usuarios que están realizando el reto.
 
+#### Models 
+
+En `/src/models/reto.ts` se encuentra la definición del modelo de los Retos, es decir:
+- Una interfaz denominada `RetoDocumentInterface` que extiende `Document` (un recurso importado del módulo de `mongoose`) donde se establecen los atributos de un grupo.
+
+- Un `schema` de la interfaz `RetoDocumentInterface`: `Schema<RetoDocumentInterface>`. Dentro de dicho `schema` se establece que:
+  - `ID`: Debe poseer un valor único, es obligatorio asignarle un valor. Y que los espacios serán suprimidos.
+  - `nombre`: Debe poseer un valor único, es obligatorio asignarle un valor. Y que los espacios serán suprimidos.
+  - `rutas`: Es obligatorio asignarle un valor. Es una referencia a `Ruta`.
+  - `tipoActividad`: Es obligatorio asignarle un valor, los espacios serán suprimidos y su valor es eun enumerado, que podrá tener el valor `bicicleta` o `correr`.
+  - `kmTotales`: No es obligatorio asignarle un valor, este es calculado según las rutas que compongan el reto.
+  - `usuariosRealizaron`: Es obligatorio asignarle un valor. Es una referencia a `Usuario`.
+
+El modelo es exportado, con el `schema` definido, en una instancia denominada `Reto`.
+
+```
+export const Reto = model<RetoDocumentInterface>('Reto', RetoSchema);
+```
+
+#### Routers
+
+Para trabajar de manera más óptima y eficiente definimos en `/src/routers/reto.ts` las distintas peticiones que son posibles (`export const retoRouter = express.Router()`), es decir:
+
+- POST: Creación de un grupo.
+  - `rutas`: Se verifica que las rutas introducidas existen, en caso contrario se retorna un status `404` con un `error: "Track not found"`. Además, calcula los kilometros totales del reto sumando las longitudes de las rutas existentes.
+  - `usuariosRealizaron`: Se comprueba que los usuarios introducidos existan, en caso contrario se retorna un status `404` con un `error: "User not found"`.
+
+Empleando `populate` actualizamos los atributos `rutas` y `usuariosRealizaron`.
+ 
+- GET: Se puede obtener los datos de un reto mediante su nombre o mediante su ID, introduciendolo en la URL de la petición que se realiza:
+  - Se verifica que el reto en cuestión existe, en caso contrario se retorna un status `400`.
+  - Si todo termina correctamente se retorna un status `201` con el reto buscado.
+
+- PATCH: Se puede actualizar datos de un reto, en concreto, se permite modificar el nombre, las rutas, el tipo de actividad y los usuarios que lo realizaron, mediante búsqueda de un reto por el nombre del mismo o por la ID.
+  - `rutas`: Se eliminan las antiguas rutas que formaban parte del reto, y se añaden las nuevas rutas.
+  - `usuariosRealizaron`: Se eliminan los antiguos usuarios que formaban parte del reto, accediendo al atributo `retosActivos` de los distintos usuarios. Acto seguido, modificamos en cada uno de los nuevos miembros del reto en cuestión el atributo `retosActivos` para que se incluya el reto.
+
+ Empleando `populate` actualizamos los atributos `rutas` y `usuariosRealizaron`.
+
+- DELETE: Se permite borrar un reto, introduciendo el nombre del mismo o el ID (por URL a la hora de realizar la petición):
+  - En primer lugar, se comprueba que el reto existe.
+  - Se verifican que los `usuariosRealizaron` existen y accediendo al atributo `retosActivos` de cada uno de los usuarios en cuestión se elimina de la lista al reto que estamos eliminando.
+
+  Empleando `populate` actualizamos los atributos `rutas` y `usuariosRealizaron`.
 
 ### Ruta
 Para cada ruta incluida dentro del sistema, se debe almacenar la información siguiente:
