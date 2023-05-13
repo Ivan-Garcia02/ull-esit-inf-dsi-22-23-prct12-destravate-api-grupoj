@@ -144,7 +144,7 @@ Los retos serán otra entidad dentro del sistema. Esta entidad deberá contener 
 
 - Nombre del reto.
 
--Rutas que forman parte del reto.
+- Rutas que forman parte del reto.
 
 - Tipo de actividad del reto: bicicleta o correr.
 
@@ -175,7 +175,7 @@ export const Reto = model<RetoDocumentInterface>('Reto', RetoSchema);
 
 Para trabajar de manera más óptima y eficiente definimos en `/src/routers/reto.ts` las distintas peticiones que son posibles (`export const retoRouter = express.Router()`), es decir:
 
-- POST: Creación de un grupo.
+- POST: Creación de un reto.
   - `rutas`: Se verifica que las rutas introducidas existen, en caso contrario se retorna un status `404` con un `error: "Track not found"`. Además, calcula los kilometros totales del reto sumando las longitudes de las rutas existentes.
   - `usuariosRealizaron`: Se comprueba que los usuarios introducidos existan, en caso contrario se retorna un status `404` con un `error: "User not found"`.
 
@@ -198,6 +198,9 @@ Empleando `populate` actualizamos los atributos `rutas` y `usuariosRealizaron`.
   Empleando `populate` actualizamos los atributos `rutas` y `usuariosRealizaron`.
 
 ### Ruta
+
+#### Contexto 
+En la ruta `/tracks` del API, se deberá poder crear, leer, actualizar o borrar una ruta (deportiva) a través de los métodos HTTP necesarios.
 Para cada ruta incluida dentro del sistema, se debe almacenar la información siguiente:
 
 - ID único de la ruta.
@@ -218,7 +221,51 @@ Para cada ruta incluida dentro del sistema, se debe almacenar la información si
 
 - Calificación media de la ruta.
 
+#### Models 
 
+En `/src/models/ruta.ts` se encuentra la definición del modelo de las Rutas, es decir:
+- Una interfaz denominada `RutaDocumentInterface` que extiende `Document` (un recurso importado del módulo de `mongoose`) donde se establecen los atributos de una ruta.
+
+- Un `schema` de la interfaz `RutaDocumentInterface`: `Schema<RutaDocumentInterface>`. Dentro de dicho `schema` se establece que:
+  - `ID`: Debe poseer un valor único, es obligatorio asignarle un valor.
+  - `nombre`: Es obligatorio asignarle un valor. Y que los espacios serán suprimidos.
+  - `geolocalizacionInicio`: Es obligatorio asignarle un valor. Es una tupla formada por dos `number`.
+  - `geolocalizacionFinal`: Es obligatorio asignarle un valor. Es una tupla formada por dos `number`.
+  - `longitud`: Es obligatorio asignarle un valor. Es de tipo `number` y este no puede ser negativo.
+  - `desnivel`: Es obligatorio asignarle un valor. Es de tipo `number`.
+  - `usuariosRealizaron`: Es obligatorio asignarle un valor. Es una referencia a `Usuario`.
+  - `tipoActividad`: Es obligatorio asignarle un valor, los espacios serán suprimidos y su valor es eun enumerado, que podrá tener el valor `bicicleta` o `correr`.
+  - `calificacion`: Es obligatorio asignarle un valor. Es de tipo `number`.
+
+El modelo es exportado, con el `schema` definido, en una instancia denominada `Ruta`.
+
+```
+export const Ruta = model<RutaDocumentInterface>('Ruta', RutaSchema);
+```
+
+#### Routers
+
+Para trabajar de manera más óptima y eficiente definimos en `/src/routers/ruta.ts` las distintas peticiones que son posibles (`export const rutaRouter = express.Router()`), es decir:
+
+- POST: Creación de una ruta.
+  Se crea una ruta sin verificar la existencia de usuarios, pues al crear la ruta no poseen ninguno dentro de la lista y los usuarios son los que se incluyen en esta lista al actualizar su propia lista llamada ``rutasFavoritas`. Por tanto, la ruta se crea de manera simple.
+  
+- GET: Se puede obtener los datos de una ruta mediante su nombre o mediante su ID, introduciendolo en la URL de la petición que se realiza:
+  - Se verifica que el usuario en cuestión existe, en caso contrario se retorna un status `400`.
+  - Si todo termina correctamente se retorna un status `201` con el grupo buscado.
+  - 
+ Se emplea `populate` para actualizan los atributos `usuariosRealizaron`.
+ 
+- PATCH: Se puede actualizar datos de una ruta, en concreto, se permite modificar el nombre, la geolocalización inicial, la geolocalización final, la longitud, el desnivel, el tipo de actividad y la clasificación. Todo ello mediante búsqueda de una ruta por el nombre del mismo o por la ID.
+
+  Se emplea `populate` para actualizan los atributos `usuariosRealizaron`.
+
+- DELETE: Se permite borrar una ruta, introduciendo el nombre de la misma o el ID (por URL a la hora de realizar la petición):
+  - En primer lugar, se comprueba que la ruta existe.
+  - Se accede a cada uno de los `usuariosRealizaron` buscando la presencia del usuario en cuestión a eliminar y se borra su presencia de los atributos correspondientes.
+
+   Se emplea `populate` para actualizan los atributos `usuariosRealizaron`.
+   
 ### Usuario
 
 #### Contexto 
@@ -238,8 +285,8 @@ Dentro del sistema, necesitamos la siguiente información de los usuarios:
 
 #### Models 
 
-En `/src/models/usuario.ts` se encuentra la definición del modelo de los Grupos, es decir:
-- Una interfaz denominada `UsuarioDocumentInterface` que extiende `Document` (un recurso importado del módulo de `mongoose`) donde se establecen los atributos de un grupo.
+En `/src/models/usuario.ts` se encuentra la definición del modelo de los Usuarios, es decir:
+- Una interfaz denominada `UsuarioDocumentInterface` que extiende `Document` (un recurso importado del módulo de `mongoose`) donde se establecen los atributos de un usuario.
 
 - Un `schema` de la interfaz `UsuarioDocumentInterface`: `Schema<UsuarioDocumentInterface>`. Dentro de dicho `schema` se establece que:
   - `ID`: Debe poseer un valor único, es obligatorio asignarle un valor.
@@ -291,7 +338,7 @@ Para trabajar de manera más óptima y eficiente definimos en `/src/routers/grup
   - Se muestra el usuario siguiendo el formato establecido en el `type` denominado `usuarioJson` que ya comentamos en models.
   - Si todo termina correctamente se retorna un status `201` con el grupo buscado.
 
-- PATCH: Se puede actualizar datos de un usuario, en concreto, se permite modificar la ID, el nombre, el tipo de actividad, los amigos, el grupo de amigos, las estadísticas de entrenamiento, las rutas favoritas, los retos activos y el histórico de rutas. Todo ello mediante búsqueda de un grupo por el nombre del mismo o por la ID.
+- PATCH: Se puede actualizar datos de un usuario, en concreto, se permite modificar la ID, el nombre, el tipo de actividad, los amigos, el grupo de amigos, las estadísticas de entrenamiento, las rutas favoritas, los retos activos y el histórico de rutas. Todo ello mediante búsqueda de un usuario por el nombre del mismo o por la ID.
   - `amigos`: Se busca cada uno de los amigos actuales del usuario y se les elimina el usuario en cuestión en el atributo array `amigos` para, acto seguido, añadir los datos del usuario en los atributos `amigos` de cada uno de los nuevos amigos del usuario.
   - `grupoAmigos`: Al igual que con `amigos` se busca uno a uno los grupos de amigos actuales en los que se encuentra el usuario y se le borra de los mismos, para luego introducirlo en los nuevos grupos que ha introducido. 
   - `rutasFavoritas`: Simplemente se verifican que las rutas introducidas existen para añadirlas en el usuario, NO se incluye al usuario en las rutas en el atributo de `usuariosRealizaron`. Esto se debe a que se considera que por tener de favorito una ruta no implica que se haya realizado en sí la misma.
