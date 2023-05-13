@@ -20,7 +20,7 @@
 
 ## Resumen
 <!-- qué se hace y para que se hace -->
-Esta práctica consiste en implementar un API REST haciendo uso del servidor express y de node.js. Además, será necesario hacer uso de las operaciones CRUD de creación, lectura, modificación y borrado. 
+En esta práctica grupal de la asignatura, se pretende implementar un API REST utilizando Node/Express que permita llevar a cabo operaciones CRUD (Create, Read, Update, Delete) de un registro de actividades deportivas. El API debe ser capaz de manejar la creación, lectura, modificación y borrado de rutas deportivas, usuarios, grupos y retos. El código desarrollado deberá estar alojado en un repositorio de GitHub Classroom y se deberá incluir un informe detallando la solución implementada y las decisiones de diseño. Además, se especifican los requisitos que deben cumplir las diferentes rutas o puntos de acceso JSON, incluyendo la información que debe almacenarse para cada uno de los elementos mencionados. Se deberá poder realizar operaciones de consulta utilizando una query string o el identificador único, así como realizar modificaciones y borrados de ambas maneras.
 
 ## Práctica
 <!-- Explicar desarrollo de la prácica -->
@@ -179,7 +179,7 @@ Para trabajar de manera más óptima y eficiente definimos en `/src/routers/reto
   - `rutas`: Se verifica que las rutas introducidas existen, en caso contrario se retorna un status `404` con un `error: "Track not found"`. Además, calcula los kilometros totales del reto sumando las longitudes de las rutas existentes.
   - `usuariosRealizaron`: Se comprueba que los usuarios introducidos existan, en caso contrario se retorna un status `404` con un `error: "User not found"`.
 
-Empleando `populate` actualizamos los atributos `rutas` y `usuariosRealizaron`.
+  Empleando `populate` actualizamos los atributos `rutas` y `usuariosRealizaron`.
  
 - GET: Se puede obtener los datos de un reto mediante su nombre o mediante su ID, introduciendolo en la URL de la petición que se realiza:
   - Se verifica que el reto en cuestión existe, en caso contrario se retorna un status `400`.
@@ -189,7 +189,7 @@ Empleando `populate` actualizamos los atributos `rutas` y `usuariosRealizaron`.
   - `rutas`: Se eliminan las antiguas rutas que formaban parte del reto, y se añaden las nuevas rutas.
   - `usuariosRealizaron`: Se eliminan los antiguos usuarios que formaban parte del reto, accediendo al atributo `retosActivos` de los distintos usuarios. Acto seguido, modificamos en cada uno de los nuevos miembros del reto en cuestión el atributo `retosActivos` para que se incluya el reto.
 
- Empleando `populate` actualizamos los atributos `rutas` y `usuariosRealizaron`.
+  Empleando `populate` actualizamos los atributos `rutas` y `usuariosRealizaron`.
 
 - DELETE: Se permite borrar un reto, introduciendo el nombre del mismo o el ID (por URL a la hora de realizar la petición):
   - En primer lugar, se comprueba que el reto existe.
@@ -253,8 +253,8 @@ Para trabajar de manera más óptima y eficiente definimos en `/src/routers/ruta
 - GET: Se puede obtener los datos de una ruta mediante su nombre o mediante su ID, introduciendolo en la URL de la petición que se realiza:
   - Se verifica que el usuario en cuestión existe, en caso contrario se retorna un status `400`.
   - Si todo termina correctamente se retorna un status `201` con el grupo buscado.
-  - 
- Se emplea `populate` para actualizan los atributos `usuariosRealizaron`.
+
+  Se emplea `populate` para actualizan los atributos `usuariosRealizaron`.
  
 - PATCH: Se puede actualizar datos de una ruta, en concreto, se permite modificar el nombre, la geolocalización inicial, la geolocalización final, la longitud, el desnivel, el tipo de actividad y la clasificación. Todo ello mediante búsqueda de una ruta por el nombre del mismo o por la ID.
 
@@ -355,6 +355,8 @@ Para trabajar de manera más óptima y eficiente definimos en `/src/routers/grup
 
 ## Conclusiones
 <!-- propuestas de mejoras, con que me quedé al final -->
+
+En conclusión, la implementación de un API REST para realizar operaciones CRUD sobre registros de actividades deportivas utilizando Node/Express es una tarea desafiante pero muy valiosa para el aprendizaje de la asignatura. Es importante seguir la estructura de proyecto recomendada y alojar todo el código en el repositorio de GitHub asignado. También es fundamental comentar en un informe las decisiones de diseño implementadas durante el desarrollo del proyecto, ya que esto ayuda a reflexionar sobre el proceso de creación y a mejorar en futuros proyectos. Al finalizar esta práctica, los estudiantes estarán mejor preparados para enfrentar desafíos en el desarrollo de aplicaciones web y conocerán más acerca de cómo implementar API REST con Node/Express.
 
 ## Referencias
 
