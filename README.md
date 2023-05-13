@@ -34,21 +34,73 @@ Esta práctica consiste en implementar un API REST haciendo uso del servidor exp
 4. [Usuario](#usuario)
 
 ### Grupo
-Un grupo de usuarios engloba la información de los usuarios que se unen para realizar rutas juntos.
+
+#### Contexto 
+
+Se encuentra en la ruta `/groups` del API, se deberá poder crear, leer, actualizar o borrar una grupo a través de los métodos HTTP necesarios.
+Un grupo de usuarios engloba la información de los usuarios que se unen para realizar rutas juntos:
 
 - ID único del grupo.
-
 - Nombre del grupo.
-
 - Participantes: IDs de los miembros del grupo.
-
 - Estadísticas de entrenamiento grupal: Cantidad de km y desnivel total acumulados de manera grupal en la semana, mes y año
-
 - Clasificación de los usuarios: Ranking de los usuarios que más entrenamientos han realizado históricamente dentro del grupo.
-
 - Rutas favoritas del grupo: Rutas que los usuarios del grupo han realizado con mayor frecuencia en sus salidas conjuntas.
-
 - Histórico de rutas realizadas por el grupo: Información similar que almacenan los usuarios pero en este caso referente a los grupos.
+
+#### Models 
+
+En `/src/models/grupo.ts` se encuentra la definición del modelo de los Grupos, es decir:
+- Una interfaz denominada `GrupoDocumentInterface` que extiende `Document` (un recurso importado del módulo de `mongoose`) donde se establecen los atributos de un grupo.
+
+- Un `schema` de la interfaz `GrupoDocumentInterface`: `Schema<GrupoDocumentInterface>`. Dentro de dicho `schema` se establece que:
+  - `ID`: Debe poseer un valor único, es obligatorio asignarle un valor. Y que los espacios serán suprimidos.
+  - `nombre`: Debe poseer un valor único, es obligatorio asignarle un valor. Y que los espacios serán suprimidos.
+  - `participantes`: Es obligatorio asignarle un valor. Es una referencia a `Usuario`.
+  - `estadisticasEntrenamiento`: Es obligatorio asignarle un valor. Es una tupla formada por cuatro `number`.
+  - `clasificacionUsuarios`: Es obligatorio asignarle un valor. Es una referencia a `Usuario`.
+  - `rutasFavoritas`: Es obligatorio asignarle un valor. Es una referencia a `Usuario`.
+  - `historicoRutas`: Es obligatorio asignarle un valor. Es una referencia a `Ruta`.
+
+El modelo es exportado, con el `schema` definido, en una instancia denominada `Grupo`.
+
+```
+export const Grupo = model<GrupoDocumentInterface>('Grupo', GrupoSchema);
+```
+
+Con el objetivo de mantener visibilizar un formato mucho más entendible se establece un `type` denominado `grupoJSON` en el que tendremos un formato de datos basado principalmente en los nombres e IDs de los distintos elementos:
+
+```
+export type grupoJSON = {
+  ID: number,
+  nombre: string,
+  participantes: UsuarioDocumentInterface[],
+  estadisticasEntrenamiento: [number, number, number, number],
+  clasificacionUsuarios: [number, string][],
+  rutasFavoritas: RutaDocumentInterface[],
+  historicoRutas: [string, string][],
+}
+```
+#### Routers
+
+Para trabajar de manera más óptima y eficiente definimos en `/src/routers/grupo.ts` las distintas peticiones que son posibles (`export const grupoRouter = express.Router()`), es decir:
+
+- POST: Creación de un grupo.
+  - `participantes`: Se verifica que los participantes introducidos existen, en caso contrario se retorna un status `404` con un `error: "User not found"`. Además, se accede al atributo `grupoAmigos` de cada uno de los integrantes del grupo y se le incluye el grupo en cuestión en el array.
+  - `estadisticasEntrenamiento`: Al ser un grupo de nueva creación se presupone que no hay km y desnivel total acumulados de manera grupal en la semana, mes y año.
+  - `clasificacionUsuarios`: Se calculan los kilometros totales de los usuarios que formarán parte del grupo para después ordenar.
+  - `rutasFavoritas`: Se comprueba que las rutas introducidas existan, en caso contrario se retorna un status `404` con un `error: "Track not found"`.
+  - `historicoRutas`: Se comprueba que las rutas introducidas existan, en caso contrario se retorna un status `404` con un `error: "Track not found"`.
+
+  Se ordena el ranking de los usuarios según los participantes.
+
+- GET: Se puede obtener los datos de un grupo mediante su nombre o mediante su ID, introduciendola en la URL de la petición que se realiza:
+
+
+
+
+
+
 
 
 ### Reto
