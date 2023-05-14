@@ -8,10 +8,10 @@ import { Ruta } from '../src/models/ruta.js'
 const primerGrupo = {
   ID: 1,
   nombre: "Novatos",
-  participantes: ["usuarioSegundo", "usuarioInicial"],
-  estadisticasEntrenamiento: [12, 13, 12, 14],
-  clasificacionUsuarios: ["usuarioInicial", "usuarioSegundo"],
-  rutasFavoritas: [1],
+  participantes: [],
+  estadisticasEntrenamiento: [],
+  clasificacionUsuarios: [],
+  rutasFavoritas: [],
   historicoRutas: [],
 }
 
@@ -21,6 +21,7 @@ beforeEach(async () => {
   await Grupo.deleteMany();
   await new Grupo(primerGrupo).save();
 });
+
 
 describe('POST /groups', () => {
 

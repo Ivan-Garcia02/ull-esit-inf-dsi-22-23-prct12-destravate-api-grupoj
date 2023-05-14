@@ -8,16 +8,29 @@ import { Usuario } from '../src/models/usuario.js'
 const primerReto = {
   ID: 2,
   nombre: 'Subida',
-  rutas: ["Laurisilva De Felipe"],
+  rutas: [],
   tipoActividad: 'correr',
   kmTotales: 0,
-  usuariosRealizaron: ["usuarioInicial"]
+  usuariosRealizaron: []
+}
+
+const pRuta = {
+  ID: 1,
+  nombre: 'Laurisilve',
+  geolocalizacionInicio: [12,50],
+  geolocalizacionFinal: [20,2],
+  longitud: 2002,
+  desnivel: 200,
+  usuariosRealizaron: [],
+  tipoActividad: 'bicicleta',
+  calificacion: 6
 }
 
 beforeEach(async () => {
   await Reto.deleteMany();
   await Ruta.deleteMany();
   await new Reto(primerReto).save();
+  await new Ruta(pRuta).save();
 });
 
 describe('POST /challenges', () => {
@@ -28,7 +41,7 @@ describe('POST /challenges', () => {
       rutas: [],
       tipoActividad: 'bicicleta',
       kmTotales: 0,
-      usuariosRealizaron: ["usuarioSegundo"]
+      usuariosRealizaron: []
     }).expect(201);
   });
 
