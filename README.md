@@ -125,13 +125,12 @@ Para trabajar de manera más óptima y eficiente definimos en `/src/routers/grup
   - `rutasFavoritas`: Se verifica que las rutas introducidas existen y se añaden a la lista del grupo.
   - `historicoRutas`: Se verifica que cada una de las rutas introducidas existen y se actualiza el histórico de rutas.
 
-  Empleando `populate` actualizamos los atributos `participantes`, `rutasFavoritas` y `clasificacionUsuarios`.
 
 - DELETE: Se permite borrar un grupo, introduciendo el nombre del mismo o el ID (por URL a la hora de realizar la petición):
   - En primer lugar, se comprueba que el grupo existe.
   - Se verifican que los `participantes` existen y accediendo al atributo `grupoAmigos` de cada uno de los usuarios en cuestión se elimina de la lista al grupo que estamos eliminando.
 
-  Empleando `populate` actualizamos los atributos `participantes`, `rutasFavoritas` y `clasificacionUsuarios`.
+Empleamos `populate` para mostrar junto con el objectID de cada referencia, su ID y su nombre.
 
 ### Reto
 
@@ -178,8 +177,6 @@ Para trabajar de manera más óptima y eficiente definimos en `/src/routers/reto
 - POST: Creación de un reto.
   - `rutas`: Se verifica que las rutas introducidas existen, en caso contrario se retorna un status `404` con un `error: "Track not found"`. Además, calcula los kilometros totales del reto sumando las longitudes de las rutas existentes.
   - `usuariosRealizaron`: Se comprueba que los usuarios introducidos existan, en caso contrario se retorna un status `404` con un `error: "User not found"`.
-
-  Empleando `populate` actualizamos los atributos `rutas` y `usuariosRealizaron`.
  
 - GET: Se puede obtener los datos de un reto mediante su nombre o mediante su ID, introduciendolo en la URL de la petición que se realiza:
   - Se verifica que el reto en cuestión existe, en caso contrario se retorna un status `400`.
@@ -189,13 +186,12 @@ Para trabajar de manera más óptima y eficiente definimos en `/src/routers/reto
   - `rutas`: Se eliminan las antiguas rutas que formaban parte del reto, y se añaden las nuevas rutas.
   - `usuariosRealizaron`: Se eliminan los antiguos usuarios que formaban parte del reto, accediendo al atributo `retosActivos` de los distintos usuarios. Acto seguido, modificamos en cada uno de los nuevos miembros del reto en cuestión el atributo `retosActivos` para que se incluya el reto.
 
-  Empleando `populate` actualizamos los atributos `rutas` y `usuariosRealizaron`.
 
 - DELETE: Se permite borrar un reto, introduciendo el nombre del mismo o el ID (por URL a la hora de realizar la petición):
   - En primer lugar, se comprueba que el reto existe.
   - Se verifican que los `usuariosRealizaron` existen y accediendo al atributo `retosActivos` de cada uno de los usuarios en cuestión se elimina de la lista al reto que estamos eliminando.
 
-  Empleando `populate` actualizamos los atributos `rutas` y `usuariosRealizaron`.
+Empleamos `populate` para mostrar junto con el objectID de cada referencia, su ID y su nombre.
 
 ### Ruta
 
@@ -253,18 +249,14 @@ Para trabajar de manera más óptima y eficiente definimos en `/src/routers/ruta
 - GET: Se puede obtener los datos de una ruta mediante su nombre o mediante su ID, introduciendolo en la URL de la petición que se realiza:
   - Se verifica que el usuario en cuestión existe, en caso contrario se retorna un status `400`.
   - Si todo termina correctamente se retorna un status `201` con el grupo buscado.
-
-  Se emplea `populate` para actualizan los atributos `usuariosRealizaron`.
  
 - PATCH: Se puede actualizar datos de una ruta, en concreto, se permite modificar el nombre, la geolocalización inicial, la geolocalización final, la longitud, el desnivel, el tipo de actividad y la clasificación. Todo ello mediante búsqueda de una ruta por el nombre del mismo o por la ID.
-
-  Se emplea `populate` para actualizan los atributos `usuariosRealizaron`.
 
 - DELETE: Se permite borrar una ruta, introduciendo el nombre de la misma o el ID (por URL a la hora de realizar la petición):
   - En primer lugar, se comprueba que la ruta existe.
   - Se accede a cada uno de los `usuariosRealizaron` buscando la presencia del usuario en cuestión a eliminar y se borra su presencia de los atributos correspondientes.
 
-   Se emplea `populate` para actualizan los atributos `usuariosRealizaron`.
+Empleamos `populate` para mostrar junto con el objectID de cada referencia, su ID y su nombre.
    
 ### Usuario
 
@@ -331,7 +323,6 @@ Para trabajar de manera más óptima y eficiente definimos en `/src/routers/grup
   - `retosActivos`: Se verifica que los retos introducidos existen.
   - `historicoRutas`: Se comprueba que las rutas introducidas existan, en caso contrario se retorna un status `404` con un `error: "Track not found"`. Se incluye al usuario en las rutas indicadas en el array de las rutas.
 
-  Empleando `populate` se actualizan los atributos `amigos`, `grupoAmigos`, `rutasFavoritas` y `retosActivos`.
 
 - GET: Se puede obtener los datos de un usuario mediante su nombre o mediante su ID, introduciendola en la URL de la petición que se realiza:
   - Se verifica que el usuario en cuestión existe, en caso contrario se retorna un status `400`.
@@ -345,18 +336,19 @@ Para trabajar de manera más óptima y eficiente definimos en `/src/routers/grup
   - `retosActivos`: Al igual que en `amigos` y `grupoAmigos` se elimina al usuario de los retos y se le añade a los nuevos que ha introducido. 
   - `historicoRutas`: Se borra al usuario de las distintas rutas en las que estaba y se le añade de las nuevas que ha indicado, en caso de que éstas existan.
 
-  Se emplea `populate` para actualizan los atributos `amigos`, `grupoAmigos`, `rutasFavoritas` y `retosActivos`.
-
 - DELETE: Se permite borrar un usuario, introduciendo el nombre del mismo o el ID (por URL a la hora de realizar la petición):
   - En primer lugar, se comprueba que el usuario existe.
   - Se accede a cada uno de los `amigos`, `grupoAmigos`, `retosActivos` y `rutas` buscando la presencia del usuario en cuestión a eliminar y se borra su presencia de los atributos correspondientes.
 
-  Empleando `populate` se actualizan los atributos `amigos`, `grupoAmigos`, `rutasFavoritas` y `retosActivos`.
+Empleamos `populate` para mostrar junto con el objectID de cada referencia, su ID y su nombre.
 
 ## Conclusiones
 <!-- propuestas de mejoras, con que me quedé al final -->
 
 En conclusión, la implementación de un API REST para realizar operaciones CRUD sobre registros de actividades deportivas utilizando Node/Express es una tarea desafiante pero muy valiosa para el aprendizaje de la asignatura. Es importante seguir la estructura de proyecto recomendada y alojar todo el código en el repositorio de GitHub asignado. También es fundamental comentar en un informe las decisiones de diseño implementadas durante el desarrollo del proyecto, ya que esto ayuda a reflexionar sobre el proceso de creación y a mejorar en futuros proyectos. Al finalizar esta práctica, los estudiantes estarán mejor preparados para enfrentar desafíos en el desarrollo de aplicaciones web y conocerán más acerca de cómo implementar API REST con Node/Express.
+
+### Despliegue del API REST
+Finalmente realizamos el despliegue del API REST, siguiendo los pasos para lo creacion de un cluster en MongoDB Atlas, y la conexión con Cyclic de la API. Tras realizar todos los pasos obtenemos la conexión con la URL `https://long-robe-ant.cyclic.app`.
 
 ## Referencias
 

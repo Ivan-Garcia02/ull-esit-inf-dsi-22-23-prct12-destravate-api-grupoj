@@ -12,7 +12,315 @@
 <div class="col-content">
 <div class="tsd-page-title">
 <h2>dsi-prct012-destravate-api</h2></div>
-<div class="tsd-panel tsd-typography"><a id="md:práctica-12---destravate-api-nodeexpress" class="tsd-anchor"></a><h1><a href="#$práctica-12---destravate-api-nodeexpress" style="color:inherit;text-decoration:none">Práctica 12 - Destravate: API Node/Express</a></h1></div></div>
+<div class="tsd-panel tsd-typography"><a id="md:práctica-12---destravate-api-nodeexpress" class="tsd-anchor"></a><h1><a href="#$práctica-12---destravate-api-nodeexpress" style="color:inherit;text-decoration:none">Práctica 12 - Destravate: API Node/Express</a></h1><p align="center">
+  <a href="https://coveralls.io/github/ULL-ESIT-INF-DSI-2223/ull-esit-inf-dsi-22-23-prct12-destravate-api-grupoj?branch=main">
+    <img alt="Coverage Status" src="https://coveralls.io/repos/github/ULL-ESIT-INF-DSI-2223/ull-esit-inf-dsi-22-23-prct12-destravate-api-grupoj/badge.svg?branch=main">
+  </a>
+  <a href="https://github.com/ULL-ESIT-INF-DSI-2223/ull-esit-inf-dsi-22-23-prct12-destravate-api-grupoj/actions/workflows/node.js.yml">
+    <img alt="Tests" src="https://github.com/ULL-ESIT-INF-DSI-2223/ull-esit-inf-dsi-22-23-prct12-destravate-api-grupoj/actions/workflows/node.js.yml/badge.svg">
+  </a>
+  <a href="https://sonarcloud.io/summary/new_code?id=ULL-ESIT-INF-DSI-2223_ull-esit-inf-dsi-22-23-prct12-destravate-api-grupoj">
+    <img alt="Quality Gate Status" src="https://sonarcloud.io/api/project_badges/measure?project=ULL-ESIT-INF-DSI-2223_ull-esit-inf-dsi-22-23-prct12-destravate-api-grupoj&metric=alert_status">
+  </a>
+</p> 
+
+<a id="md:índice" class="tsd-anchor"></a><h2><a href="#$índice" style="color:inherit;text-decoration:none">Índice</a></h2><ol>
+<li><a href="#resumen">Resumen</a></li>
+<li><a href="#pr%C3%A1ctica">Práctica</a></li>
+<li><a href="#conclusiones">Conclusiones</a></li>
+<li><a href="#referencias">Referencias</a></li>
+</ol>
+<a id="md:resumen" class="tsd-anchor"></a><h2><a href="#$resumen" style="color:inherit;text-decoration:none">Resumen</a></h2><!-- qué se hace y para que se hace -->
+<p>En esta práctica grupal de la asignatura, se pretende implementar un API REST utilizando Node/Express que permita llevar a cabo operaciones CRUD (Create, Read, Update, Delete) de un registro de actividades deportivas. El API debe ser capaz de manejar la creación, lectura, modificación y borrado de rutas deportivas, usuarios, grupos y retos. El código desarrollado deberá estar alojado en un repositorio de GitHub Classroom y se deberá incluir un informe detallando la solución implementada y las decisiones de diseño. Además, se especifican los requisitos que deben cumplir las diferentes rutas o puntos de acceso JSON, incluyendo la información que debe almacenarse para cada uno de los elementos mencionados. Se deberá poder realizar operaciones de consulta utilizando una query string o el identificador único, así como realizar modificaciones y borrados de ambas maneras.</p>
+<a id="md:práctica" class="tsd-anchor"></a><h2><a href="#$práctica" style="color:inherit;text-decoration:none">Práctica</a></h2><!-- Explicar desarrollo de la prácica -->
+
+<ol>
+<li><a href="#grupo">Grupo</a></li>
+<li><a href="#reto">Reto</a></li>
+<li><a href="#ruta">Ruta</a></li>
+<li><a href="#usuario">Usuario</a></li>
+</ol>
+<a id="md:app" class="tsd-anchor"></a><h3><a href="#$app" style="color:inherit;text-decoration:none">App</a></h3><p>Se posee un fichero <code>app.ts</code> ubicado en el directorio <code>/src</code> de la raíz del proyecto en el que proporcionaremos las distintas posibilidades que un usuario que se comunique mediante express con el sistema puede llevar a cabo, ofreciendo una comunicación indirecta con el servidor de Mongo DB. Para ello se sigue la siguiente sintaxis: </p>
+<pre><code><span class="hl-0">export</span><span class="hl-1"> </span><span class="hl-2">const</span><span class="hl-1"> </span><span class="hl-3">app</span><span class="hl-1"> = </span><span class="hl-4">express</span><span class="hl-1">();</span><br/><span class="hl-5">app</span><span class="hl-1">.</span><span class="hl-4">use</span><span class="hl-1">(</span><span class="hl-5">express</span><span class="hl-1">.</span><span class="hl-4">json</span><span class="hl-1">());</span><br/><span class="hl-5">app</span><span class="hl-1">.</span><span class="hl-4">use</span><span class="hl-1">(</span><span class="hl-5">rutaRouter</span><span class="hl-1">);</span><br/><span class="hl-5">app</span><span class="hl-1">.</span><span class="hl-4">use</span><span class="hl-1">(</span><span class="hl-5">grupoRouter</span><span class="hl-1">);</span><br/><span class="hl-5">app</span><span class="hl-1">.</span><span class="hl-4">use</span><span class="hl-1">(</span><span class="hl-5">usuarioRouter</span><span class="hl-1">);</span><br/><span class="hl-5">app</span><span class="hl-1">.</span><span class="hl-4">use</span><span class="hl-1">(</span><span class="hl-5">retoRouter</span><span class="hl-1">);</span><br/><span class="hl-5">app</span><span class="hl-1">.</span><span class="hl-4">use</span><span class="hl-1">(</span><span class="hl-5">defaultRouter</span><span class="hl-1">);</span>
+</code></pre>
+<p>Exportando nuestra <code>app</code> que posee las distintas opciones que conectan con cada uno de nuestros ficheros ubicados en <code>/routers</code> que iremos explicando con mayor detalle en este informe.</p>
+<a id="md:index" class="tsd-anchor"></a><h3><a href="#$index" style="color:inherit;text-decoration:none">Index</a></h3><p>Se posee un fichero <code>index.ts</code> ubicado en el directorio <code>/src</code> de la raíz del proyecto que permitirá la comunicación con los recursos que ofrece el programa y el usuario que realice peticiones en <code>express</code>. El fichero contiene de manera muy sencilla un puesto de escucha, a la espera de peticiones que se puedan llevar a cabo:</p>
+<pre><code><span class="hl-5">app</span><span class="hl-1">.</span><span class="hl-4">listen</span><span class="hl-1">(</span><span class="hl-5">port</span><span class="hl-1">, () </span><span class="hl-2">=&gt;</span><span class="hl-1"> {</span><br/><span class="hl-1">  </span><span class="hl-5">console</span><span class="hl-1">.</span><span class="hl-4">log</span><span class="hl-1">(</span><span class="hl-6">`Server is up on port </span><span class="hl-2">${</span><span class="hl-5">port</span><span class="hl-2">}</span><span class="hl-6">`</span><span class="hl-1">);</span><br/><span class="hl-1">});</span>
+</code></pre>
+<a id="md:grupo" class="tsd-anchor"></a><h3><a href="#$grupo" style="color:inherit;text-decoration:none">Grupo</a></h3><a id="md:contexto" class="tsd-anchor"></a><h4><a href="#$contexto" style="color:inherit;text-decoration:none">Contexto</a></h4><p>Se encuentra en la ruta <code>/groups</code> del API, se deberá poder crear, leer, actualizar o borrar un grupo a través de los métodos HTTP necesarios.
+Un grupo de usuarios engloba la información de los usuarios que se unen para realizar rutas juntos:</p>
+<ul>
+<li>ID único del grupo.</li>
+<li>Nombre del grupo.</li>
+<li>Participantes: IDs de los miembros del grupo.</li>
+<li>Estadísticas de entrenamiento grupal: Cantidad de km y desnivel total acumulados de manera grupal en la semana, mes y año</li>
+<li>Clasificación de los usuarios: Ranking de los usuarios que más entrenamientos han realizado históricamente dentro del grupo.</li>
+<li>Rutas favoritas del grupo: Rutas que los usuarios del grupo han realizado con mayor frecuencia en sus salidas conjuntas.</li>
+<li>Histórico de rutas realizadas por el grupo: Información similar que almacenan los usuarios pero en este caso referente a los grupos.</li>
+</ul>
+<a id="md:models" class="tsd-anchor"></a><h4><a href="#$models" style="color:inherit;text-decoration:none">Models</a></h4><p>En <code>/src/models/reto.ts</code> se encuentra la definición del modelo de los Grupos, es decir:</p>
+<ul>
+<li><p>Una interfaz denominada <code>GrupoDocumentInterface</code> que extiende <code>Document</code> (un recurso importado del módulo de <code>mongoose</code>) donde se establecen los atributos de un grupo.</p>
+</li>
+<li><p>Un <code>schema</code> de la interfaz <code>GrupoDocumentInterface</code>: <code>Schema&lt;GrupoDocumentInterface&gt;</code>. Dentro de dicho <code>schema</code> se establece que:</p>
+<ul>
+<li><code>ID</code>: Debe poseer un valor único, es obligatorio asignarle un valor. Y que los espacios serán suprimidos.</li>
+<li><code>nombre</code>: Debe poseer un valor único, es obligatorio asignarle un valor. Y que los espacios serán suprimidos.</li>
+<li><code>participantes</code>: Es obligatorio asignarle un valor. Es una referencia a <code>Usuario</code>.</li>
+<li><code>estadisticasEntrenamiento</code>: Es obligatorio asignarle un valor. Es una tupla formada por cuatro <code>number</code>.</li>
+<li><code>clasificacionUsuarios</code>: Es obligatorio asignarle un valor. Es una referencia a <code>Usuario</code>.</li>
+<li><code>rutasFavoritas</code>: Es obligatorio asignarle un valor. Es una referencia a <code>Usuario</code>.</li>
+<li><code>historicoRutas</code>: Es obligatorio asignarle un valor. Es una tupla de <code>string</code> y una referencia a <code>Ruta</code>.</li>
+</ul>
+</li>
+</ul>
+<p>El modelo es exportado, con el <code>schema</code> definido, en una instancia denominada <code>Grupo</code>.</p>
+<pre><code><span class="hl-0">export</span><span class="hl-1"> </span><span class="hl-2">const</span><span class="hl-1"> </span><span class="hl-3">Grupo</span><span class="hl-1"> = </span><span class="hl-4">model</span><span class="hl-1">&lt;</span><span class="hl-7">GrupoDocumentInterface</span><span class="hl-1">&gt;(</span><span class="hl-6">&#39;Grupo&#39;</span><span class="hl-1">, </span><span class="hl-5">GrupoSchema</span><span class="hl-1">);</span>
+</code></pre>
+<p>Con el objetivo de mantener visibilizar un formato mucho más entendible se establece un <code>type</code> denominado <code>grupoJSON</code> en el que tendremos un formato de datos basado principalmente en los nombres e IDs de los distintos elementos:</p>
+<pre><code><span class="hl-0">export</span><span class="hl-1"> </span><span class="hl-2">type</span><span class="hl-1"> </span><span class="hl-7">grupoJSON</span><span class="hl-1"> = {</span><br/><span class="hl-1">  </span><span class="hl-5">ID</span><span class="hl-1">: </span><span class="hl-7">number</span><span class="hl-1">,</span><br/><span class="hl-1">  </span><span class="hl-5">nombre</span><span class="hl-1">: </span><span class="hl-7">string</span><span class="hl-1">,</span><br/><span class="hl-1">  </span><span class="hl-5">participantes</span><span class="hl-1">: </span><span class="hl-7">UsuarioDocumentInterface</span><span class="hl-1">[],</span><br/><span class="hl-1">  </span><span class="hl-5">estadisticasEntrenamiento</span><span class="hl-1">: [</span><span class="hl-7">number</span><span class="hl-1">, </span><span class="hl-7">number</span><span class="hl-1">, </span><span class="hl-7">number</span><span class="hl-1">, </span><span class="hl-7">number</span><span class="hl-1">],</span><br/><span class="hl-1">  </span><span class="hl-5">clasificacionUsuarios</span><span class="hl-1">: [</span><span class="hl-7">number</span><span class="hl-1">, </span><span class="hl-7">string</span><span class="hl-1">][],</span><br/><span class="hl-1">  </span><span class="hl-5">rutasFavoritas</span><span class="hl-1">: </span><span class="hl-7">RutaDocumentInterface</span><span class="hl-1">[],</span><br/><span class="hl-1">  </span><span class="hl-5">historicoRutas</span><span class="hl-1">: [</span><span class="hl-7">string</span><span class="hl-1">, </span><span class="hl-7">string</span><span class="hl-1">][],</span><br/><span class="hl-1">}</span>
+</code></pre>
+<a id="md:routers" class="tsd-anchor"></a><h4><a href="#$routers" style="color:inherit;text-decoration:none">Routers</a></h4><p>Para trabajar de manera más óptima y eficiente definimos en <code>/src/routers/grupo.ts</code> las distintas peticiones que son posibles (<code>export const grupoRouter = express.Router()</code>), es decir:</p>
+<ul>
+<li><p>POST: Creación de un grupo.</p>
+<ul>
+<li><code>participantes</code>: Se verifica que los participantes introducidos existen, en caso contrario se retorna un status <code>404</code> con un <code>error: &quot;User not found&quot;</code>. Además, se accede al atributo <code>grupoAmigos</code> de cada uno de los integrantes del grupo y se le incluye el grupo en cuestión en el array.</li>
+<li><code>estadisticasEntrenamiento</code>: Al ser un grupo de nueva creación se presupone que no hay km y desnivel total acumulados de manera grupal en la semana, mes y año.</li>
+<li><code>clasificacionUsuarios</code>: Se calculan los kilometros totales de los usuarios que formarán parte del grupo para después ordenar.</li>
+<li><code>rutasFavoritas</code>: Se comprueba que las rutas introducidas existan, en caso contrario se retorna un status <code>404</code> con un <code>error: &quot;Track not found&quot;</code>.</li>
+<li><code>historicoRutas</code>: Se comprueba que las rutas introducidas existan, en caso contrario se retorna un status <code>404</code> con un <code>error: &quot;Track not found&quot;</code>.</li>
+</ul>
+<p>Se ordena el ranking de los usuarios según los participantes.</p>
+</li>
+<li><p>GET: Se puede obtener los datos de un grupo mediante su nombre o mediante su ID, introduciendola en la URL de la petición que se realiza:</p>
+<ul>
+<li>Se verifica que el grupo en cuestión existe, en caso contrario se retorna un status <code>400</code>.</li>
+<li>Se muestra el grupo siguiendo el formato establecido en el <code>type</code> denominado <code>grupoJson</code> que ya comentamos en models.</li>
+<li>Si todo termina correctamente se retorna un status <code>201</code> con el grupo buscado.</li>
+</ul>
+</li>
+<li><p>PATCH: Se puede actualizar datos de un grupo, en concreto, se permite modificar el nombre, los participantes, las estadisticas de entrenamiento, las rutas favoritas y el histórico de rutas, mediante búsqueda de un grupo por el nombre del mismo o por la ID.</p>
+<ul>
+<li><code>participantes</code>: Se eliminan los antiguos usuarios que formaban parte del grupo, accediendo al atributo <code>grupoAmigos</code> de los distintos usuarios. Acto seguido, modificamos en cada uno de los nuevos miembros del grupo en cuestión el atributo <code>grupoAmigos</code> para que se incluya el grupo.</li>
+<li><code>rutasFavoritas</code>: Se verifica que las rutas introducidas existen y se añaden a la lista del grupo.</li>
+<li><code>historicoRutas</code>: Se verifica que cada una de las rutas introducidas existen y se actualiza el histórico de rutas.</li>
+</ul>
+</li>
+<li><p>DELETE: Se permite borrar un grupo, introduciendo el nombre del mismo o el ID (por URL a la hora de realizar la petición):</p>
+<ul>
+<li>En primer lugar, se comprueba que el grupo existe.</li>
+<li>Se verifican que los <code>participantes</code> existen y accediendo al atributo <code>grupoAmigos</code> de cada uno de los usuarios en cuestión se elimina de la lista al grupo que estamos eliminando.</li>
+</ul>
+</li>
+</ul>
+<p>Empleamos <code>populate</code> para mostrar junto con el objectID de cada referencia, su ID y su nombre.</p>
+<a id="md:reto" class="tsd-anchor"></a><h3><a href="#$reto" style="color:inherit;text-decoration:none">Reto</a></h3><a id="md:contexto-1" class="tsd-anchor"></a><h4><a href="#$contexto-1" style="color:inherit;text-decoration:none">Contexto</a></h4><p>En la ruta <code>/challenges</code> del API, se deberá poder crear, leer, actualizar o borrar una reto a través de los métodos HTTP necesarios.</p>
+<p>Los retos serán otra entidad dentro del sistema. Esta entidad deberá contener toda la información asociada a objetivos de entrenamientos:</p>
+<ul>
+<li><p>ID único del reto.</p>
+</li>
+<li><p>Nombre del reto.</p>
+</li>
+<li><p>Rutas que forman parte del reto.</p>
+</li>
+<li><p>Tipo de actividad del reto: bicicleta o correr.</p>
+</li>
+<li><p>Km totales a realizar (como la suma de los kms de las rutas que lo engloban).</p>
+</li>
+<li><p>Usuarios que están realizando el reto.</p>
+</li>
+</ul>
+<a id="md:models-1" class="tsd-anchor"></a><h4><a href="#$models-1" style="color:inherit;text-decoration:none">Models</a></h4><p>En <code>/src/models/reto.ts</code> se encuentra la definición del modelo de los Retos, es decir:</p>
+<ul>
+<li><p>Una interfaz denominada <code>RetoDocumentInterface</code> que extiende <code>Document</code> (un recurso importado del módulo de <code>mongoose</code>) donde se establecen los atributos de un grupo.</p>
+</li>
+<li><p>Un <code>schema</code> de la interfaz <code>RetoDocumentInterface</code>: <code>Schema&lt;RetoDocumentInterface&gt;</code>. Dentro de dicho <code>schema</code> se establece que:</p>
+<ul>
+<li><code>ID</code>: Debe poseer un valor único, es obligatorio asignarle un valor. Y que los espacios serán suprimidos.</li>
+<li><code>nombre</code>: Debe poseer un valor único, es obligatorio asignarle un valor. Y que los espacios serán suprimidos.</li>
+<li><code>rutas</code>: Es obligatorio asignarle un valor. Es una referencia a <code>Ruta</code>.</li>
+<li><code>tipoActividad</code>: Es obligatorio asignarle un valor, los espacios serán suprimidos y su valor es eun enumerado, que podrá tener el valor <code>bicicleta</code> o <code>correr</code>.</li>
+<li><code>kmTotales</code>: No es obligatorio asignarle un valor, este es calculado según las rutas que compongan el reto.</li>
+<li><code>usuariosRealizaron</code>: Es obligatorio asignarle un valor. Es una referencia a <code>Usuario</code>.</li>
+</ul>
+</li>
+</ul>
+<p>El modelo es exportado, con el <code>schema</code> definido, en una instancia denominada <code>Reto</code>.</p>
+<pre><code><span class="hl-0">export</span><span class="hl-1"> </span><span class="hl-2">const</span><span class="hl-1"> </span><span class="hl-3">Reto</span><span class="hl-1"> = </span><span class="hl-4">model</span><span class="hl-1">&lt;</span><span class="hl-7">RetoDocumentInterface</span><span class="hl-1">&gt;(</span><span class="hl-6">&#39;Reto&#39;</span><span class="hl-1">, </span><span class="hl-5">RetoSchema</span><span class="hl-1">);</span>
+</code></pre>
+<a id="md:routers-1" class="tsd-anchor"></a><h4><a href="#$routers-1" style="color:inherit;text-decoration:none">Routers</a></h4><p>Para trabajar de manera más óptima y eficiente definimos en <code>/src/routers/reto.ts</code> las distintas peticiones que son posibles (<code>export const retoRouter = express.Router()</code>), es decir:</p>
+<ul>
+<li><p>POST: Creación de un reto.</p>
+<ul>
+<li><code>rutas</code>: Se verifica que las rutas introducidas existen, en caso contrario se retorna un status <code>404</code> con un <code>error: &quot;Track not found&quot;</code>. Además, calcula los kilometros totales del reto sumando las longitudes de las rutas existentes.</li>
+<li><code>usuariosRealizaron</code>: Se comprueba que los usuarios introducidos existan, en caso contrario se retorna un status <code>404</code> con un <code>error: &quot;User not found&quot;</code>.</li>
+</ul>
+</li>
+<li><p>GET: Se puede obtener los datos de un reto mediante su nombre o mediante su ID, introduciendolo en la URL de la petición que se realiza:</p>
+<ul>
+<li>Se verifica que el reto en cuestión existe, en caso contrario se retorna un status <code>400</code>.</li>
+<li>Si todo termina correctamente se retorna un status <code>201</code> con el reto buscado.</li>
+</ul>
+</li>
+<li><p>PATCH: Se puede actualizar datos de un reto, en concreto, se permite modificar el nombre, las rutas, el tipo de actividad y los usuarios que lo realizaron, mediante búsqueda de un reto por el nombre del mismo o por la ID.</p>
+<ul>
+<li><code>rutas</code>: Se eliminan las antiguas rutas que formaban parte del reto, y se añaden las nuevas rutas.</li>
+<li><code>usuariosRealizaron</code>: Se eliminan los antiguos usuarios que formaban parte del reto, accediendo al atributo <code>retosActivos</code> de los distintos usuarios. Acto seguido, modificamos en cada uno de los nuevos miembros del reto en cuestión el atributo <code>retosActivos</code> para que se incluya el reto.</li>
+</ul>
+</li>
+<li><p>DELETE: Se permite borrar un reto, introduciendo el nombre del mismo o el ID (por URL a la hora de realizar la petición):</p>
+<ul>
+<li>En primer lugar, se comprueba que el reto existe.</li>
+<li>Se verifican que los <code>usuariosRealizaron</code> existen y accediendo al atributo <code>retosActivos</code> de cada uno de los usuarios en cuestión se elimina de la lista al reto que estamos eliminando.</li>
+</ul>
+</li>
+</ul>
+<p>Empleamos <code>populate</code> para mostrar junto con el objectID de cada referencia, su ID y su nombre.</p>
+<a id="md:ruta" class="tsd-anchor"></a><h3><a href="#$ruta" style="color:inherit;text-decoration:none">Ruta</a></h3><a id="md:contexto-2" class="tsd-anchor"></a><h4><a href="#$contexto-2" style="color:inherit;text-decoration:none">Contexto</a></h4><p>En la ruta <code>/tracks</code> del API, se deberá poder crear, leer, actualizar o borrar una ruta (deportiva) a través de los métodos HTTP necesarios.
+Para cada ruta incluida dentro del sistema, se debe almacenar la información siguiente:</p>
+<ul>
+<li><p>ID único de la ruta.</p>
+</li>
+<li><p>Nombre de la ruta.</p>
+</li>
+<li><p>Geolocalización del inicio (coordenadas).</p>
+</li>
+<li><p>Geolocalización del final de la ruta (coordenadas).</p>
+</li>
+<li><p>Longitud de la ruta en kilómetros.</p>
+</li>
+<li><p>Desnivel medio de la ruta.</p>
+</li>
+<li><p>Usuarios que han realizado la ruta (IDs).</p>
+</li>
+<li><p>Tipo de actividad: Indicador si la ruta se puede realizar en bicicleta o corriendo.</p>
+</li>
+<li><p>Calificación media de la ruta.</p>
+</li>
+</ul>
+<a id="md:models-2" class="tsd-anchor"></a><h4><a href="#$models-2" style="color:inherit;text-decoration:none">Models</a></h4><p>En <code>/src/models/ruta.ts</code> se encuentra la definición del modelo de las Rutas, es decir:</p>
+<ul>
+<li><p>Una interfaz denominada <code>RutaDocumentInterface</code> que extiende <code>Document</code> (un recurso importado del módulo de <code>mongoose</code>) donde se establecen los atributos de una ruta.</p>
+</li>
+<li><p>Un <code>schema</code> de la interfaz <code>RutaDocumentInterface</code>: <code>Schema&lt;RutaDocumentInterface&gt;</code>. Dentro de dicho <code>schema</code> se establece que:</p>
+<ul>
+<li><code>ID</code>: Debe poseer un valor único, es obligatorio asignarle un valor.</li>
+<li><code>nombre</code>: Es obligatorio asignarle un valor. Y que los espacios serán suprimidos.</li>
+<li><code>geolocalizacionInicio</code>: Es obligatorio asignarle un valor. Es una tupla formada por dos <code>number</code>.</li>
+<li><code>geolocalizacionFinal</code>: Es obligatorio asignarle un valor. Es una tupla formada por dos <code>number</code>.</li>
+<li><code>longitud</code>: Es obligatorio asignarle un valor. Es de tipo <code>number</code> y este no puede ser negativo.</li>
+<li><code>desnivel</code>: Es obligatorio asignarle un valor. Es de tipo <code>number</code>.</li>
+<li><code>usuariosRealizaron</code>: Es obligatorio asignarle un valor. Es una referencia a <code>Usuario</code>.</li>
+<li><code>tipoActividad</code>: Es obligatorio asignarle un valor, los espacios serán suprimidos y su valor es eun enumerado, que podrá tener el valor <code>bicicleta</code> o <code>correr</code>.</li>
+<li><code>calificacion</code>: Es obligatorio asignarle un valor. Es de tipo <code>number</code>.</li>
+</ul>
+</li>
+</ul>
+<p>El modelo es exportado, con el <code>schema</code> definido, en una instancia denominada <code>Ruta</code>.</p>
+<pre><code><span class="hl-0">export</span><span class="hl-1"> </span><span class="hl-2">const</span><span class="hl-1"> </span><span class="hl-3">Ruta</span><span class="hl-1"> = </span><span class="hl-4">model</span><span class="hl-1">&lt;</span><span class="hl-7">RutaDocumentInterface</span><span class="hl-1">&gt;(</span><span class="hl-6">&#39;Ruta&#39;</span><span class="hl-1">, </span><span class="hl-5">RutaSchema</span><span class="hl-1">);</span>
+</code></pre>
+<a id="md:routers-2" class="tsd-anchor"></a><h4><a href="#$routers-2" style="color:inherit;text-decoration:none">Routers</a></h4><p>Para trabajar de manera más óptima y eficiente definimos en <code>/src/routers/ruta.ts</code> las distintas peticiones que son posibles (<code>export const rutaRouter = express.Router()</code>), es decir:</p>
+<ul>
+<li><p>POST: Creación de una ruta.
+Se crea una ruta sin verificar la existencia de usuarios, pues al crear la ruta no poseen ninguno dentro de la lista y los usuarios son los que se incluyen en esta lista al actualizar su propia lista llamada ``rutasFavoritas`. Por tanto, la ruta se crea de manera simple.</p>
+</li>
+<li><p>GET: Se puede obtener los datos de una ruta mediante su nombre o mediante su ID, introduciendolo en la URL de la petición que se realiza:</p>
+<ul>
+<li>Se verifica que el usuario en cuestión existe, en caso contrario se retorna un status <code>400</code>.</li>
+<li>Si todo termina correctamente se retorna un status <code>201</code> con el grupo buscado.</li>
+</ul>
+</li>
+<li><p>PATCH: Se puede actualizar datos de una ruta, en concreto, se permite modificar el nombre, la geolocalización inicial, la geolocalización final, la longitud, el desnivel, el tipo de actividad y la clasificación. Todo ello mediante búsqueda de una ruta por el nombre del mismo o por la ID.</p>
+</li>
+<li><p>DELETE: Se permite borrar una ruta, introduciendo el nombre de la misma o el ID (por URL a la hora de realizar la petición):</p>
+<ul>
+<li>En primer lugar, se comprueba que la ruta existe.</li>
+<li>Se accede a cada uno de los <code>usuariosRealizaron</code> buscando la presencia del usuario en cuestión a eliminar y se borra su presencia de los atributos correspondientes.</li>
+</ul>
+</li>
+</ul>
+<p>Empleamos <code>populate</code> para mostrar junto con el objectID de cada referencia, su ID y su nombre.</p>
+<a id="md:usuario" class="tsd-anchor"></a><h3><a href="#$usuario" style="color:inherit;text-decoration:none">Usuario</a></h3><a id="md:contexto-3" class="tsd-anchor"></a><h4><a href="#$contexto-3" style="color:inherit;text-decoration:none">Contexto</a></h4><p>Se encuentra en la ruta <code>/users</code> del API, se deberá poder crear, leer, actualizar o borrar un usuario a través de los métodos HTTP necesarios.
+Dentro del sistema, necesitamos la siguiente información de los usuarios:</p>
+<ul>
+<li>ID único del usuario (puede ser un username creado por el usuario en el registro o un valor generado automáticamente por el sistema).</li>
+<li>Nombre del usuario.</li>
+<li>Actividades que realiza: Correr o bicicleta.</li>
+<li>Amigos en la aplicación: Colleción de IDs de usuarios con los que interacciona.</li>
+<li>Grupos de amigos: Diferentes colecciones de IDs de usuarios con los que suele realizar rutas.</li>
+<li>Estadísticas de entrenamiento: Cantidad de km y desnivel total acumulados en la semana, mes y año.</li>
+<li>Rutas favoritas: IDs de las rutas que el usuario ha realizado con mayor frecuencia.</li>
+<li>Retos activos: IDs de los retos que el usuario está realizando actualmente.</li>
+<li>Histórico de rutas: Los usuarios deben almacenar el historial de rutas realizadas desde que se registraron en el sistema.</li>
+</ul>
+<a id="md:models-3" class="tsd-anchor"></a><h4><a href="#$models-3" style="color:inherit;text-decoration:none">Models</a></h4><p>En <code>/src/models/usuario.ts</code> se encuentra la definición del modelo de los Usuarios, es decir:</p>
+<ul>
+<li><p>Una interfaz denominada <code>UsuarioDocumentInterface</code> que extiende <code>Document</code> (un recurso importado del módulo de <code>mongoose</code>) donde se establecen los atributos de un usuario.</p>
+</li>
+<li><p>Un <code>schema</code> de la interfaz <code>UsuarioDocumentInterface</code>: <code>Schema&lt;UsuarioDocumentInterface&gt;</code>. Dentro de dicho <code>schema</code> se establece que:</p>
+<ul>
+<li><code>ID</code>: Debe poseer un valor único, es obligatorio asignarle un valor.</li>
+<li><code>nombre</code>: Es obligatorio asignarle un valor. Y que los espacios serán suprimidos.</li>
+<li><code>tipoActividad</code>: Es obligatorio asignarle un valor, los espacios serán suprimidos y su valor es eun enumerado, que podrá tener el valor <code>bicicleta</code> o <code>correr</code>.</li>
+<li><code>amigos</code>: Es obligatorio asignarle un valor. Es una referencia a <code>Usuario</code>.</li>
+<li><code>grupoAmigos</code>: Es obligatorio asignarle un valor. Es una referencia a <code>Usuario</code>.</li>
+<li><code>estadisticasEntrenamiento</code>: Es obligatorio asignarle un valor. Es una tupla formada por cuatro <code>number</code>.</li>
+<li><code>rutasFavoritas</code>: Es obligatorio asignarle un valor. Es una referencia a <code>Ruta</code>.</li>
+<li><code>retosActivos</code>: Es obligatorio asignarle un valor. Es una referencia a <code>Reto</code>.</li>
+<li><code>historicoRutas</code>: Es obligatorio asignarle un valor. Es una tupla de <code>string</code> y una referencia a <code>Ruta</code>.</li>
+</ul>
+</li>
+</ul>
+<p>El modelo es exportado, con el <code>schema</code> definido, en una instancia denominada <code>Usuario</code>.</p>
+<pre><code><span class="hl-0">export</span><span class="hl-1"> </span><span class="hl-2">const</span><span class="hl-1"> </span><span class="hl-3">Usuario</span><span class="hl-1"> = </span><span class="hl-4">model</span><span class="hl-1">&lt;</span><span class="hl-7">UsuarioDocumentInterface</span><span class="hl-1">&gt;(</span><span class="hl-6">&#39;Usuario&#39;</span><span class="hl-1">, </span><span class="hl-5">UsuarioSchema</span><span class="hl-1">);</span>
+</code></pre>
+<p>Con el objetivo de mantener visibilizar un formato mucho más entendible se establece un <code>type</code> denominado <code>grupoJSON</code> en el que tendremos un formato de datos basado principalmente en los nombres e IDs de los distintos elementos:</p>
+<pre><code><span class="hl-0">export</span><span class="hl-1"> </span><span class="hl-2">type</span><span class="hl-1"> </span><span class="hl-7">usuarioJSON</span><span class="hl-1"> = {</span><br/><span class="hl-1">  </span><span class="hl-5">ID</span><span class="hl-1">: </span><span class="hl-7">string</span><span class="hl-1">,</span><br/><span class="hl-1">  </span><span class="hl-5">nombre</span><span class="hl-1">: </span><span class="hl-7">string</span><span class="hl-1">,</span><br/><span class="hl-1">  </span><span class="hl-5">tipoActividad</span><span class="hl-1">: </span><span class="hl-7">string</span><span class="hl-1">,</span><br/><span class="hl-1">  </span><span class="hl-5">amigos</span><span class="hl-1">: </span><span class="hl-7">UsuarioDocumentInterface</span><span class="hl-1">[],</span><br/><span class="hl-1">  </span><span class="hl-5">grupoAmigos</span><span class="hl-1">: </span><span class="hl-7">GrupoDocumentInterface</span><span class="hl-1">[],</span><br/><span class="hl-1">  </span><span class="hl-5">estadisticasEntrenamiento</span><span class="hl-1">: [</span><span class="hl-7">number</span><span class="hl-1">, </span><span class="hl-7">number</span><span class="hl-1">, </span><span class="hl-7">number</span><span class="hl-1">, </span><span class="hl-7">number</span><span class="hl-1">],</span><br/><span class="hl-1">  </span><span class="hl-5">rutasFavoritas</span><span class="hl-1">: </span><span class="hl-7">RutaDocumentInterface</span><span class="hl-1">[],</span><br/><span class="hl-1">  </span><span class="hl-5">retosActivos</span><span class="hl-1">: </span><span class="hl-7">RetoDocumentInterface</span><span class="hl-1">[],</span><br/><span class="hl-1">  </span><span class="hl-5">historicoRutas</span><span class="hl-1">: [</span><span class="hl-7">string</span><span class="hl-1">, </span><span class="hl-7">string</span><span class="hl-1">][],</span><br/><span class="hl-1">}</span>
+</code></pre>
+<a id="md:routers-3" class="tsd-anchor"></a><h4><a href="#$routers-3" style="color:inherit;text-decoration:none">Routers</a></h4><p>Para trabajar de manera más óptima y eficiente definimos en <code>/src/routers/grupo.ts</code> las distintas peticiones que son posibles (<code>export const grupoRouter = express.Router()</code>), es decir:</p>
+<ul>
+<li><p>POST: Creación de un usuario.</p>
+<ul>
+<li><code>amigos</code>: Se verifica que los amigos introducidos existen, en caso contrario se retorna un status <code>404</code> con un <code>error: &quot;User not found&quot;</code>. Además, se accede al atributo <code>amigos</code> de cada uno de los nuevos amigos y se le incluye el usuario en cuestión en el array.</li>
+<li><code>grupoAmigos</code>: Se verifica que el grupo al que se desea incluir existen. En caso afirmativo, se accede al grupo en cuestión y se le añade el usuario al array de <code>participantes</code>.</li>
+<li><code>rutasFavoritas</code>: Se verifica que la rutas introducidas existen.</li>
+<li><code>retosActivos</code>: Se verifica que los retos introducidos existen.</li>
+<li><code>historicoRutas</code>: Se comprueba que las rutas introducidas existan, en caso contrario se retorna un status <code>404</code> con un <code>error: &quot;Track not found&quot;</code>. Se incluye al usuario en las rutas indicadas en el array de las rutas.</li>
+</ul>
+</li>
+<li><p>GET: Se puede obtener los datos de un usuario mediante su nombre o mediante su ID, introduciendola en la URL de la petición que se realiza:</p>
+<ul>
+<li>Se verifica que el usuario en cuestión existe, en caso contrario se retorna un status <code>400</code>.</li>
+<li>Se muestra el usuario siguiendo el formato establecido en el <code>type</code> denominado <code>usuarioJson</code> que ya comentamos en models.</li>
+<li>Si todo termina correctamente se retorna un status <code>201</code> con el grupo buscado.</li>
+</ul>
+</li>
+<li><p>PATCH: Se puede actualizar datos de un usuario, en concreto, se permite modificar la ID, el nombre, el tipo de actividad, los amigos, el grupo de amigos, las estadísticas de entrenamiento, las rutas favoritas, los retos activos y el histórico de rutas. Todo ello mediante búsqueda de un usuario por el nombre del mismo o por la ID.</p>
+<ul>
+<li><code>amigos</code>: Se busca cada uno de los amigos actuales del usuario y se les elimina el usuario en cuestión en el atributo array <code>amigos</code> para, acto seguido, añadir los datos del usuario en los atributos <code>amigos</code> de cada uno de los nuevos amigos del usuario.</li>
+<li><code>grupoAmigos</code>: Al igual que con <code>amigos</code> se busca uno a uno los grupos de amigos actuales en los que se encuentra el usuario y se le borra de los mismos, para luego introducirlo en los nuevos grupos que ha introducido. </li>
+<li><code>rutasFavoritas</code>: Simplemente se verifican que las rutas introducidas existen para añadirlas en el usuario, NO se incluye al usuario en las rutas en el atributo de <code>usuariosRealizaron</code>. Esto se debe a que se considera que por tener de favorito una ruta no implica que se haya realizado en sí la misma.</li>
+<li><code>retosActivos</code>: Al igual que en <code>amigos</code> y <code>grupoAmigos</code> se elimina al usuario de los retos y se le añade a los nuevos que ha introducido. </li>
+<li><code>historicoRutas</code>: Se borra al usuario de las distintas rutas en las que estaba y se le añade de las nuevas que ha indicado, en caso de que éstas existan.</li>
+</ul>
+</li>
+<li><p>DELETE: Se permite borrar un usuario, introduciendo el nombre del mismo o el ID (por URL a la hora de realizar la petición):</p>
+<ul>
+<li>En primer lugar, se comprueba que el usuario existe.</li>
+<li>Se accede a cada uno de los <code>amigos</code>, <code>grupoAmigos</code>, <code>retosActivos</code> y <code>rutas</code> buscando la presencia del usuario en cuestión a eliminar y se borra su presencia de los atributos correspondientes.</li>
+</ul>
+</li>
+</ul>
+<p>Empleamos <code>populate</code> para mostrar junto con el objectID de cada referencia, su ID y su nombre.</p>
+<a id="md:conclusiones" class="tsd-anchor"></a><h2><a href="#$conclusiones" style="color:inherit;text-decoration:none">Conclusiones</a></h2><!-- propuestas de mejoras, con que me quedé al final -->
+
+<p>En conclusión, la implementación de un API REST para realizar operaciones CRUD sobre registros de actividades deportivas utilizando Node/Express es una tarea desafiante pero muy valiosa para el aprendizaje de la asignatura. Es importante seguir la estructura de proyecto recomendada y alojar todo el código en el repositorio de GitHub asignado. También es fundamental comentar en un informe las decisiones de diseño implementadas durante el desarrollo del proyecto, ya que esto ayuda a reflexionar sobre el proceso de creación y a mejorar en futuros proyectos. Al finalizar esta práctica, los estudiantes estarán mejor preparados para enfrentar desafíos en el desarrollo de aplicaciones web y conocerán más acerca de cómo implementar API REST con Node/Express.</p>
+<a id="md:despliegue-del-api-rest" class="tsd-anchor"></a><h3><a href="#$despliegue-del-api-rest" style="color:inherit;text-decoration:none">Despliegue del API REST</a></h3><p>Finalmente realizamos el despliegue del API REST, siguiendo los pasos para lo creacion de un cluster en MongoDB Atlas, y la conexión con Cyclic de la API. Tras realizar todos los pasos obtenemos la conexión con la URL <code>https://long-robe-ant.cyclic.app</code>.</p>
+<a id="md:referencias" class="tsd-anchor"></a><h2><a href="#$referencias" style="color:inherit;text-decoration:none">Referencias</a></h2><p><a href="https://ull-esit-inf-dsi-2223.github.io/prct12-destravate-api/">Práctica referenciada</a>.</p>
+<p><a href="https://www.mongodb.com/atlas/database">MongoDB/MongoDB Atlas</a>.</p>
+<p><a href="https://mongoosejs.com/">Mongoose</a>.</p>
+<p><a href="https://docs.github.com/es/issues/tracking-your-work-with-issues/about-issues">GitHub issues</a>.</p>
+</div></div>
 <div class="col-sidebar">
 <div class="page-menu">
 <div class="tsd-navigation settings">
@@ -34,11 +342,48 @@
 <ul>
 <li>
 <ul>
-<li><a href="#md:práctica-12---destravate-api-nodeexpress"><span>Práctica 12 -<wbr/> <wbr/>Destravate: API <wbr/>Node/<wbr/>Express</span></a></li></ul></li></ul></div></details></div>
+<li><a href="#md:práctica-12---destravate-api-nodeexpress"><span>Práctica 12 -<wbr/> <wbr/>Destravate: API <wbr/>Node/<wbr/>Express</span></a></li>
+<li>
+<ul>
+<li><a href="#md:índice"><span>Índice</span></a></li>
+<li><a href="#md:resumen"><span>Resumen</span></a></li>
+<li><a href="#md:práctica"><span>Práctica</span></a></li>
+<li>
+<ul>
+<li><a href="#md:app"><span>App</span></a></li>
+<li><a href="#md:index"><span>Index</span></a></li>
+<li><a href="#md:grupo"><span>Grupo</span></a></li>
+<li>
+<ul>
+<li><a href="#md:contexto"><span>Contexto</span></a></li>
+<li><a href="#md:models"><span>Models</span></a></li>
+<li><a href="#md:routers"><span>Routers</span></a></li></ul></li>
+<li><a href="#md:reto"><span>Reto</span></a></li>
+<li>
+<ul>
+<li><a href="#md:contexto-1"><span>Contexto</span></a></li>
+<li><a href="#md:models-1"><span>Models</span></a></li>
+<li><a href="#md:routers-1"><span>Routers</span></a></li></ul></li>
+<li><a href="#md:ruta"><span>Ruta</span></a></li>
+<li>
+<ul>
+<li><a href="#md:contexto-2"><span>Contexto</span></a></li>
+<li><a href="#md:models-2"><span>Models</span></a></li>
+<li><a href="#md:routers-2"><span>Routers</span></a></li></ul></li>
+<li><a href="#md:usuario"><span>Usuario</span></a></li>
+<li>
+<ul>
+<li><a href="#md:contexto-3"><span>Contexto</span></a></li>
+<li><a href="#md:models-3"><span>Models</span></a></li>
+<li><a href="#md:routers-3"><span>Routers</span></a></li></ul></li></ul></li>
+<li><a href="#md:conclusiones"><span>Conclusiones</span></a></li>
+<li>
+<ul>
+<li><a href="#md:despliegue-del-api-rest"><span>Despliegue del API REST</span></a></li></ul></li>
+<li><a href="#md:referencias"><span>Referencias</span></a></li></ul></li></ul></li></ul></div></details></div>
 <div class="site-menu">
 <nav class="tsd-navigation"><a href="modules.html" class="current"><svg class="tsd-kind-icon" width="24" height="24" viewBox="0 0 24 24"><rect fill="var(--color-icon-background)" stroke="var(--color-ts-namespace)" stroke-width="1.5" x="1" y="1" width="22" height="22" rx="6" id="icon-4-path"></rect><path d="M9.33 16V7.24H10.77L13.446 14.74C13.43 14.54 13.41 14.296 13.386 14.008C13.37 13.712 13.354 13.404 13.338 13.084C13.33 12.756 13.326 12.448 13.326 12.16V7.24H14.37V16H12.93L10.266 8.5C10.282 8.692 10.298 8.936 10.314 9.232C10.33 9.52 10.342 9.828 10.35 10.156C10.366 10.476 10.374 10.784 10.374 11.08V16H9.33Z" fill="var(--color-text)" id="icon-4-text"></path></svg><span>dsi-<wbr/>prct012-<wbr/>destravate-<wbr/>api</span></a>
-<ul class="tsd-small-nested-navigation">
-<li><a href="functions/holaMundo.html"><svg class="tsd-kind-icon" width="24" height="24" viewBox="0 0 24 24"><rect fill="var(--color-icon-background)" stroke="var(--color-ts-function)" stroke-width="1.5" x="1" y="1" width="22" height="22" rx="6" id="icon-64-path"></rect><path d="M9.39 16V7.24H14.55V8.224H10.446V11.128H14.238V12.112H10.47V16H9.39Z" fill="var(--color-text)" id="icon-64-text"></path></svg><span>hola<wbr/>Mundo</span></a></li></ul></nav></div></div></div>
+<ul class="tsd-small-nested-navigation"></ul></nav></div></div></div>
 <div class="tsd-generator">
 <p>Generated using <a href="https://typedoc.org/" target="_blank">TypeDoc</a></p></div>
 <div class="overlay"></div></body></html>
