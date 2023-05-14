@@ -10,7 +10,7 @@
   <a href="https://sonarcloud.io/summary/new_code?id=ULL-ESIT-INF-DSI-2223_ull-esit-inf-dsi-22-23-prct12-destravate-api-grupoj">
     <img alt="Quality Gate Status" src="https://sonarcloud.io/api/project_badges/measure?project=ULL-ESIT-INF-DSI-2223_ull-esit-inf-dsi-22-23-prct12-destravate-api-grupoj&metric=alert_status">
   </a>
-</p>
+</p> 
 
 ## Índice
 1. [Resumen](#resumen)
